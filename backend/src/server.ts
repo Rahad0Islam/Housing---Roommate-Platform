@@ -1,12 +1,17 @@
 import app from "./app";
 import config from "./config/config";
 import { prisma } from "./lib/prisma";
+import { redisClient } from "./lib/redis";
 
 async function main() {
 	const port = config.port;
 
 	await prisma.$connect();
 	console.log("prisma connected successfully ");
+
+	await redisClient.connect();
+
+	console.log("Connected to Redis successfully.");
 
 	try {
 		app.listen(port, () => {
