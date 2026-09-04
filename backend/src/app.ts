@@ -5,6 +5,7 @@ import cors from "cors";
 import config from "./config/config";
 import { notFound } from "./middleware/notFound";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
+import { AuthRoutes } from "./modules/auth/auth.route";
 
 const app: Application = express();
 app.use(
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", async (req, res) => {
 	res.send("house and roommate platform service is running");
 });
+app.use("/api/v1/auth", AuthRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

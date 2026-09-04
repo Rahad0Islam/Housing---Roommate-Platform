@@ -16,3 +16,4 @@ pnpm-workspace.yaml
 .claude
 .windsurf
 migrations
+postman
