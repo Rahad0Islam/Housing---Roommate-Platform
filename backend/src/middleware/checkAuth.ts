@@ -8,7 +8,7 @@ import config from "../config/config";
 import { jwtUtils } from "../utils/jwt";
 
 export interface requestUser {
-    email: string;
+	email: string;
 	name: string;
 	userId: string;
 	role: UserRole;
@@ -67,9 +67,9 @@ export const auth = (...requiredRoles: UserRole[]) => {
 		if (user.userStatus === "BLOCKED") {
 			throw new Error("Your account has been blocked. Please contact support.");
 		}
-        if(user.userStatus === "DELETED"){
-            throw new Error("Your account has been deleted. Please contact support.");
-        }
+		if (user.userStatus === "DELETED") {
+			throw new Error("Your account has been deleted. Please contact support.");
+		}
 
 		req.user = {
 			email,

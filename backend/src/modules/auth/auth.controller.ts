@@ -6,11 +6,9 @@ import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
 import { AppError } from "../../utils/appError";
 
-
 const registerUser = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 	await AuthService.registerUser(payload);
-
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
@@ -83,7 +81,10 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 	const user = req.user as IRequestUser;
 
 	if (!user) {
-		throw new AppError(httpStatus.BAD_REQUEST, "User information is missing in the request");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"User information is missing in the request",
+		);
 	}
 
 	const result = await AuthService.getMe(user);

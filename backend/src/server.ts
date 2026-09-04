@@ -13,7 +13,6 @@ async function main() {
 	await redisClient.connect();
 	console.log("Connected to Redis successfully.");
 
-
 	await transporter.verify();
 	console.log("SMTP transporter is ready to send emails.");
 

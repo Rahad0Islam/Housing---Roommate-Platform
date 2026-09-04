@@ -27,7 +27,7 @@ router.post(
 );
 router.get(
 	"/me",
-	auth(UserRole.ADMIN,UserRole.OWNER,UserRole.TENANT),
+	auth(UserRole.ADMIN, UserRole.OWNER, UserRole.TENANT),
 	AuthController.getMe,
 );
 router.post("/refresh-token", AuthController.refreshToken);
