@@ -6,7 +6,6 @@
 // import { catchAsync } from "../utils/catchAsync";
 // import { jwtUtils } from "../utils/jwt";
 
-
 // export interface requestUser {
 //     email: string;
 // 	name: string;

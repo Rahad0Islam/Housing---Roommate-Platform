@@ -48,9 +48,6 @@
 //   }
 // };
 
-
-
-
 // //make patient seed
 
 // export const seedPatient = async () => {
@@ -97,7 +94,6 @@
 //     })
 //   }
 // };
-
 
 // // make doctor seed
 // export const seedDoctor = async () => {
