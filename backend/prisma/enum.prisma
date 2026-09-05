@@ -14,3 +14,77 @@ enum UserStatus {
   BLOCKED
   DELETED
 }
+
+enum FlatStatus {
+  AVAILABLE
+  FULL
+  INACTIVE
+  MAINTENANCE
+}
+
+enum RoomType {
+  SINGLE
+  SHARED
+  MASTER
+}
+
+enum RoomStatus {
+  AVAILABLE
+  FULL
+  INACTIVE
+  MAINTENANCE
+}
+
+enum RentType {
+  SHORT_TERM
+  LONG_TERM
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentGateway {
+  BKASH
+  STRIPE
+  SSLCOMMERZ
+}
+
+enum PaymentType {
+  BOOKING
+  MONTHLY_RENT
+  UTILITY
+  DEPOSIT
+}
+
+enum MonthlyPaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  WAIVED
+}
+
+enum GenderPreference {
+  ANY
+  MALE
+  FEMALE
+}
+
+enum PreferenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+}

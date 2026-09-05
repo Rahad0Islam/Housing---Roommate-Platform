@@ -1,0 +1,25 @@
+model Room {
+  id            String      @id @default(uuid()) @db.Uuid
+  flatId        String      @db.Uuid
+  name          String      @db.VarChar(100)
+  roomType      RoomType
+  monthlyRent   Decimal     @db.Decimal(10, 2)
+  dailyRent     Decimal?    @db.Decimal(10, 2)
+  maxOccupants  Int
+  availableBed  Int
+  furnished     Boolean     @default(false)
+  availableFrom DateTime
+  status        RoomStatus  @default(AVAILABLE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  flat            Flat         @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  bookings        Booking[]
+  monthlyPayments MonthlyPay[]
+
+  @@index([flatId])
+  @@index([status])
+  @@index([roomType])
+  @@index([availableFrom])
+  @@map("rooms")
+}

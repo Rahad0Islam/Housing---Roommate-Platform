@@ -1,0 +1,45 @@
+model Payment {
+  id                    String          @id @default(uuid()) @db.Uuid
+
+  tenantId              String          @db.Uuid
+  bookingId             String?         @db.Uuid
+  monthlyPayId          String?         @db.Uuid
+
+  paymentType           PaymentType
+  status                PaymentStatus   @default(INITIATED)
+  paymentGateway       PaymentGateway
+
+  amount                Decimal         @db.Decimal(10, 2)
+  currency              String          @default("BDT") @db.VarChar(10)
+
+  merchantInvoiceNumber String          @unique @db.VarChar(100)
+
+  bkashPaymentId        String?         @unique @db.VarChar(255)
+  bkashTrxId            String?         @unique @db.VarChar(255)
+  payerReference        String?         @db.VarChar(255)
+
+  gatewayResponse       Json?
+
+  refundTrxId           String?         @db.VarChar(255)
+  refundAmount          Decimal?        @db.Decimal(10, 2)
+  refundReason          String?         @db.VarChar(500)
+  refundedAt            DateTime?
+
+  paidAt                DateTime?
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  tenant                User            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  booking               Booking?        @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  monthlyPay            MonthlyPay?     @relation(fields: [monthlyPayId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([bookingId])
+  @@index([monthlyPayId])
+  @@index([status])
+  @@index([paymentGateway])
+  @@index([paymentType])
+  @@index([createdAt])
+  @@map("payments")
+}

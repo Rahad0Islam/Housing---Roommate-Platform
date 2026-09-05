@@ -1,0 +1,19 @@
+model Building {
+  id             String     @id @default(uuid()) @db.Uuid
+  ownerId        String     @db.Uuid
+  name           String     @db.VarChar(255)
+  address        String     @db.VarChar(500)
+  description    String?    @db.Text
+  numberOfFloors Int
+  city           String     @db.VarChar(100)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  owner          User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  flats          Flat[]
+  amenities      Amenity[]
+
+  @@index([ownerId])
+  @@index([city])
+  @@map("building")
+}

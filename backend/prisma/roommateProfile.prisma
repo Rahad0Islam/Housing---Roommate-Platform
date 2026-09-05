@@ -1,0 +1,29 @@
+model RoommateProfile {
+  id                String           @id @default(uuid()) @db.Uuid
+  userId            String           @unique @db.Uuid
+
+  bio               String?          @db.Text
+
+  budgetMin         Decimal          @db.Decimal(10, 2)
+  budgetMax         Decimal          @db.Decimal(10, 2)
+
+  genderPreference  GenderPreference @default(ANY)
+
+  smokingAllowed    Boolean          @default(false)
+  petsAllowed       Boolean          @default(false)
+
+  cleanlinessLevel  PreferenceLevel  @default(MEDIUM)
+  noiseTolerance    PreferenceLevel  @default(MEDIUM)
+
+  sleepTime         DateTime         @db.Time(0)
+  wakeTime          DateTime         @db.Time(0)
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([budgetMin, budgetMax])
+  @@index([genderPreference])
+  @@map("roommate_profile")
+}

@@ -1,0 +1,22 @@
+model Flat {
+  id          String      @id @default(uuid()) @db.Uuid
+  buildingId  String      @db.Uuid
+  flatNumber  String      @db.VarChar(50)
+  floorNumber Int
+  bedrooms    Int
+  bathrooms   Int
+  balcony     Int         @default(0)
+  totalArea   Decimal     @db.Decimal(10, 2)
+  status      FlatStatus  @default(AVAILABLE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  building    Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  rooms       Room[]
+  utilityBills UtilityBill[]
+
+  @@unique([buildingId, flatNumber])
+  @@index([buildingId])
+  @@index([status])
+  @@map("flats")
+}
