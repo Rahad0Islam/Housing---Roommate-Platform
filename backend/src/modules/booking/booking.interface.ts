@@ -1,0 +1,40 @@
+import { BookingStatus, RentType } from "../../../generated/prisma/client";
+
+
+
+// model Booking {
+//   id        String        @id @default(uuid()) @db.Uuid
+//   roomId    String        @db.Uuid
+//   tenantId  String        @db.Uuid
+//   rentType  RentType
+//   status    BookingStatus @default(PENDING)
+//   amount    Decimal       @db.Decimal(10, 2)
+//   startDate DateTime
+//   endDate   DateTime
+//   createdAt DateTime      @default(now())
+//   updatedAt DateTime      @updatedAt
+
+
+//   room     Room      @relation(fields: [roomId], references: [id], onDelete: Restrict)
+//   tenant   User      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+//   payments Payment[]
+
+//   @@index([roomId])
+//   @@index([tenantId])
+//   @@index([status])
+//   @@index([rentType])
+//   @@index([startDate, endDate])
+//   @@map("bookings")
+// }
+
+export interface IBooking {
+  id?: string;
+  roomId: string;
+  flatId: string;
+  tenantId: string;
+  rentType: RentType;
+  status?: BookingStatus;
+  amount: number;
+  startDate: Date;
+  endDate: Date;
+}
