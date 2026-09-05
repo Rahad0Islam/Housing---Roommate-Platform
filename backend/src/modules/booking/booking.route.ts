@@ -10,7 +10,7 @@ import { bookingValidation } from "./booking.validation";
 const router = Router();
 
 router.post("/",
-     auth(UserRole.ADMIN, UserRole.OWNER),
+     auth(UserRole.ADMIN, UserRole.TENANT),
      validateRequestBody(bookingValidation.createBookingZodSchema),
      bookingController.createBooking
     

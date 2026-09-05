@@ -37,6 +37,8 @@ const config = {
 	bkash_callback_url: process.env.BKASH_CALLBACK_URL!,
 
 	google_client_id: process.env.GOOGLE_CLIENT_ID!,
+
+	frontend_url: process.env.FRONTEND_URL!,
 };
 
 export default config;
