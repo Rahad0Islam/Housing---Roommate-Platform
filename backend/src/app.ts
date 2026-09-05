@@ -7,6 +7,7 @@ import { notFound } from "./middleware/notFound";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { AuthRoutes } from "./modules/auth/auth.route";
 import { BuildingRoutes } from "./modules/building/building.route";
+import { FlatRoutes } from "./modules/flat/flat.route";
 
 const app: Application = express();
 app.use(
@@ -25,6 +26,7 @@ app.get("/", async (req, res) => {
 });
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/buildings",BuildingRoutes);
+app.use("/api/v1/flats",FlatRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

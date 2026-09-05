@@ -78,6 +78,15 @@ const getAllBuildings = async () => {
 const getBuildingByOwnerId = async (ownerId: string) => {
   const buildings = await prisma.building.findMany({
     where: { ownerId },
+    include: {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
 
   if (!buildings || buildings.length === 0) {

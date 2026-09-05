@@ -4,7 +4,8 @@ model Building {
   name                 String   @db.VarChar(255)
   address              String   @db.VarChar(500)
   description          String?  @db.Text
-  numberOfFloors       Int
+  numberOfFloors       Int      @default(0)
+  numberOfFlats        Int      @default(0)
   city                 String   @db.VarChar(100)
   buildingImage        String?  @db.VarChar(255)
   buildingImagePublicId String?  @db.VarChar(255)
