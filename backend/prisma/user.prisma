@@ -15,18 +15,18 @@ model User {
   updatedAt            DateTime     @updatedAt
 
   // Owner
-  buildings            Building[]
+  buildings Building[]
 
   // Tenant
-  bookings             Booking[]
-  payments             Payment[]
-  monthlyPayments      MonthlyPay[]
+  bookings        Booking[]
+  payments        Payment[]
+  monthlyPayments MonthlyPay[]
 
   // Roommate
-  roommateProfile      RoommateProfile?
+  roommateProfile RoommateProfile?
 
   // Utility bills created by owner
-  utilityBills         UtilityBill[]
+  utilityBills UtilityBill[]
 
   @@index([role])
   @@index([userStatus])

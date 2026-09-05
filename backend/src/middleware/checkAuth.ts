@@ -47,7 +47,7 @@ export const auth = (...requiredRoles: UserRole[]) => {
 
 		if (requiredRoles.length && !requiredRoles.includes(role)) {
 			throw new Error(
-				"Forbidden. You don't have permission to access this resource.",
+				"Forbidden. You don't have permission to access this resource",
 			);
 		}
 
