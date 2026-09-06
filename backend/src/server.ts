@@ -3,6 +3,7 @@ import config from "./config/config";
 import { transporter } from "./lib/nodeMailer";
 import { prisma } from "./lib/prisma";
 import { redisClient } from "./lib/redis";
+import seedUsers from "./utils/seed";
 
 async function main() {
 	const port = config.port;
@@ -10,11 +11,14 @@ async function main() {
 	await prisma.$connect();
 	console.log("prisma connected successfully ");
 
+
 	await redisClient.connect();
 	console.log("Connected to Redis successfully.");
 
 	await transporter.verify();
 	console.log("SMTP transporter is ready to send emails.");
+
+	await seedUsers();
 
 	try {
 		app.listen(port, () => {
