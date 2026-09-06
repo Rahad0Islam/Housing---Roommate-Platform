@@ -18,6 +18,37 @@ const createMonthlyPayments = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
+const getMonthlyPaymentById = catchAsync(async (req: Request, res: Response) => {
+  const monthlyPaymentId = req.params.id;
+  const role = req.user?.role;
+  const userId = req.user?.userId;
+
+  const monthlyPayment = await monthlyPaymentService.getMonthlyPaymentById(monthlyPaymentId as string, role as string, userId as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Monthly payment retrieved successfully",
+    data: monthlyPayment,
+  });
+});
+
+const getAllMonthlyPayments = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const role = req.user?.role;
+
+  const monthlyPayments = await monthlyPaymentService.getAllMonthlyPayments(userId as string, role as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Monthly payments retrieved successfully",
+    data: monthlyPayments,
+  });
+}); 
+
 export const monthlyPaymentController = {
   createMonthlyPayments,
+    getMonthlyPaymentById,
+    getAllMonthlyPayments,
 };

@@ -96,6 +96,73 @@ const createMonthlyPayment = async (payload: ImonthlyPayment, userId: string) =>
 
 
 
+const getMonthlyPaymentById = async (monthlyPaymentId: string, userId: string ,role: string) => {
+  
+   
+  const monthlyPayment = await prisma.monthlyPay.findUnique({
+    where: { id: monthlyPaymentId },
+    include: {
+      room: true,
+      utility: true,
+      tenant: true,
+    },
+  });
+
+  if (!monthlyPayment) {
+    throw new AppError(httpStatus.NOT_FOUND, "Monthly payment not found");
+  }
+
+  
+  if (role === "TENANT" && monthlyPayment.tenantId !== userId) {
+    throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to view this monthly payment");
+  }
+
+  if (role === "OWNER" && monthlyPayment.utility?.ownerId !== userId) {
+    throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to view this monthly payment");
+  }
+
+  return monthlyPayment;
+};
+
+
+//get all monthly payments using rbac
+
+const getAllMonthlyPayments = async (userId: string, role: string) => {
+  let monthlyPayments;
+  if (role === "TENANT") {
+    monthlyPayments = await prisma.monthlyPay.findMany({
+      where: { tenantId: userId },
+      include: {
+        room: true,
+        utility: true,
+        tenant: true,
+      },
+    });
+  } else if (role === "OWNER") {
+    monthlyPayments = await prisma.monthlyPay.findMany({
+      where: { utility: { ownerId: userId } },
+      include: {
+        room: true,
+        utility: true,
+        tenant: true,
+      },
+    });
+  } else if (role === "ADMIN") {
+    monthlyPayments = await prisma.monthlyPay.findMany({
+      include: {
+        room: true,
+        utility: true,
+        tenant: true,
+      },
+    });
+  }
+
+  return monthlyPayments;
+};
+
+
 export const monthlyPaymentService = {
   createMonthlyPayment,
+  getMonthlyPaymentById,
+  getAllMonthlyPayments,
 };

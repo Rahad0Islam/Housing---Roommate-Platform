@@ -12,4 +12,9 @@ router.post("/create-monthly-bill",auth(UserRole.OWNER),
     
      );
 
+router.get("/get-all-monthly-bills",auth(UserRole.OWNER,UserRole.TENANT,UserRole.ADMIN),
+        monthlyPaymentController.getAllMonthlyPayments);
+
+router.get("/get-monthly-bill/:id",auth(UserRole.OWNER,UserRole.TENANT,UserRole.ADMIN),
+        monthlyPaymentController.getMonthlyPaymentById);
 export const MonthlyPaymentRoutes = router;
