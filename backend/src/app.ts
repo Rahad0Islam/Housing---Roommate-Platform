@@ -14,6 +14,7 @@ import { bkashPaymentRoutes } from "./modules/bkashPayment/bkashPayment.route";
 import { UtilityBillRoutes } from "./modules/utilitybill/utilitybill.route";
 import { MonthlyPaymentRoutes } from "./modules/monthlypayment/monthlypayment.route";
 import { AmenityRoutes } from "./modules/amenity/amenity.route";
+import { RoommateProfileRoutes } from "./modules/roommateProfile/roommateProfile.route";
 
 const app: Application = express();
 app.use(
@@ -39,6 +40,10 @@ app.use("/api/v1/bkash-payment", bkashPaymentRoutes);
 app.use("/api/v1/utility-bills", UtilityBillRoutes);
 app.use("/api/v1/monthly-payments", MonthlyPaymentRoutes);
 app.use("/api/v1/amenities", AmenityRoutes);
+app.use(
+  "/api/v1/roommate-profiles",
+  RoommateProfileRoutes
+);
 	
 
 app.use(notFound);
