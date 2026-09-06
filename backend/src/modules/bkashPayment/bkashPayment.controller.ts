@@ -48,7 +48,52 @@ const bkashCallback = catchAsync(
 );
 
 
+const monthlyBkashPayment = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const userId = req.user?.userId!;
+  const result = await bkashPaymentService.monthlyBkashPayment(payload, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Monthly Bkash payment created successfully",
+    data: result,
+  });
+});
+
+const bkashMonthlyCallback = catchAsync(
+  async (req: Request, res: Response) => {
+  const bkashPaymentCallbackResponse = req.query;
+
+    const callbackResult = await bkashPaymentService.bkashMonthlyCallback(
+      bkashPaymentCallbackResponse,
+    );
+
+    if (!callbackResult) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            success: false,
+            message: "Invalid callback response",
+        });
+    }
+
+    if (!callbackResult.redirectUrl) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "Redirect URL not found in the callback response", 
+        })
+    }
+
+    const { redirectUrl } = callbackResult;
+        
+        
+		res.redirect(redirectUrl);
+		
+	},
+);
+
 export const bkashPaymentController = {
   createBkashPayment,
   bkashCallback,
+  monthlyBkashPayment,
+  bkashMonthlyCallback,
 };

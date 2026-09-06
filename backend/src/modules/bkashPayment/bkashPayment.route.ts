@@ -16,5 +16,14 @@ router.post("/create-payment",
 router.get("/booking_payment/callback",
     bkashPaymentController.bkashCallback
 );
+
+router.post("/create-monthly-payment",
+    auth(UserRole.TENANT),
+    bkashPaymentController.monthlyBkashPayment
+);
+
+router.get("/monthly_payment/callback",
+    bkashPaymentController.bkashMonthlyCallback
+);
 export const bkashPaymentRoutes = router;
 
