@@ -11,6 +11,8 @@ import { FlatRoutes } from "./modules/flat/flat.route";
 import { RoomRoutes } from "./modules/room/room.route";
 import { BookingRoutes } from "./modules/booking/booking.route";
 import { bkashPaymentRoutes } from "./modules/bkashPayment/bkashPayment.route";
+import { UtilityBillRoutes } from "./modules/utilitybill/utilitybill.route";
+import { MonthlyPaymentRoutes } from "./modules/monthlypayment/monthlypayment.route";
 
 const app: Application = express();
 app.use(
@@ -33,6 +35,9 @@ app.use("/api/v1/flats",FlatRoutes);
 app.use("/api/v1/rooms", RoomRoutes);
 app.use("/api/v1/bookings", BookingRoutes);
 app.use("/api/v1/bkash-payment", bkashPaymentRoutes);
+app.use("/api/v1/utility-bills", UtilityBillRoutes);
+app.use("/api/v1/monthly-payments", MonthlyPaymentRoutes);
+	
 
 app.use(notFound);
 app.use(globalErrorHandler);

@@ -69,7 +69,6 @@ const createBkashPayment = async (payload: IBkashPayment, userId: string) => {
     const isPaymentExists = await tx.payment.findUnique({
     where: { 
         tenantId: userId,
-        bookingId: bookingId,
         merchantInvoiceNumber: result.merchantInvoiceNumber,
     },
     
@@ -79,7 +78,6 @@ const createBkashPayment = async (payload: IBkashPayment, userId: string) => {
      await tx.payment.update({
         where: { 
             tenantId: userId,
-            bookingId: bookingId,
             merchantInvoiceNumber: result.merchantInvoiceNumber,
         },
         data: {
@@ -190,9 +188,17 @@ const bkashCallback = async (query: Record<string, any>)  => {
                 where: { id: excutePaymentResult.merchantInvoiceNumber },
                 data: {
                     status: BookingStatus.CONFIRMED,
+                    room:{
+                        update:{
+                            availableBed: {
+                                decrement: 1,
+                            },
+                        }
+                    }
                 },
             });
 
+          
           return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=success` };
 
         }  
