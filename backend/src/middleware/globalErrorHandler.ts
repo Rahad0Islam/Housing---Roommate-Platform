@@ -59,11 +59,11 @@ export const globalErrorHandler = async (
 		success: false,
 		statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
 		name:
-			config.node_env === "development" ? errorName : "Internal Server Error",
+			errorName ||
+			(err instanceof Error ? err.name : "Internal Server Error"),
 		message:
-			config.node_env === "development"
-				? errorMessage
-				: "Internal Server Error",
+			errorMessage ||
+			(err instanceof Error ? err.message : "Internal Server Error"),
 		error: config.node_env === "development" ? err : undefined,
 		stack: config.node_env === "development" ? err.stack : undefined,
 	});
