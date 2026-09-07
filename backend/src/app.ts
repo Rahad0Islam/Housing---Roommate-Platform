@@ -16,6 +16,7 @@ import { MonthlyPaymentRoutes } from "./modules/monthlypayment/monthlypayment.ro
 import { AmenityRoutes } from "./modules/amenity/amenity.route";
 import { RoommateProfileRoutes } from "./modules/roommateProfile/roommateProfile.route";
 import { UserProfileImageRoutes } from "./modules/user/user.route";
+import { OwnerRoutes } from "./modules/owner/owner.route";
 
 const app: Application = express();
 app.use(
@@ -43,6 +44,7 @@ app.use("/api/v1/monthly-payments", MonthlyPaymentRoutes);
 app.use("/api/v1/amenities", AmenityRoutes);
 app.use("/api/v1/roommate-profiles",RoommateProfileRoutes);
 app.use("/api/v1/userprofileimage",UserProfileImageRoutes);
+app.use("/api/v1/owners",OwnerRoutes);
 
 	
 

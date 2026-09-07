@@ -7,7 +7,7 @@ import {
 import { prisma } from "../lib/prisma";
 
 const seedUsers = async () => {
-	const password = await bcrypt.hash("123", 10);
+	const password = await bcrypt.hash("Rahad@999", 10);
 
 	const users = [
 		{

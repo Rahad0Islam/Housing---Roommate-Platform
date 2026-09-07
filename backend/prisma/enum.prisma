@@ -89,3 +89,10 @@ enum PreferenceLevel {
   MEDIUM
   HIGH
 }
+
+
+enum OwnerStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}

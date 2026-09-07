@@ -27,6 +27,7 @@ model User {
 
   // Utility bills created by owner
   utilityBills UtilityBill[]
+  owners Owner?
 
   @@index([role])
   @@index([userStatus])
