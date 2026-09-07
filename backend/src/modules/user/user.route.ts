@@ -27,4 +27,10 @@ router.patch(
   UserController.blockUser
 );
 
+router.patch(
+  "/active-user/:userId",
+  auth(UserRole.ADMIN),
+  UserController.activeUser
+);
+
 export const UserProfileImageRoutes = router;

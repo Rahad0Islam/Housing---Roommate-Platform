@@ -46,8 +46,22 @@ const blockUser = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const activeUser = catchAsync(async (req: Request, res: Response) => {
+	const { userId } = req.params;
+	const adminId = req.user!.userId;
+	const result = await UserService.activeUser(userId as string, adminId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User activated successfully",
+		data: result,
+	});
+});
+
 export const UserController = {
 	imageUpload,
 	deleteUserImage,
 	blockUser,
+	activeUser,
 };

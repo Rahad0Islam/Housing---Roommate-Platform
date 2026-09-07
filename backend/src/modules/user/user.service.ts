@@ -96,6 +96,37 @@ const blockUser = async (userId: string, adminId: string) => {
     });
 };
 
+const activeUser = async (userId: string, adminId: string) => {
+    if (userId === adminId) {
+        throw new AppError(httpStatus.FORBIDDEN, "You cannot change your own account status");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (user.userStatus !== UserStatus.BLOCKED) {
+        throw new AppError(httpStatus.BAD_REQUEST, "User is not blocked");
+    }
+
+    return prisma.user.update({
+        where: { id: userId },
+        data: { userStatus: UserStatus.ACTIVE },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            userStatus: true,
+            updatedAt: true,
+        },
+    });
+};
+
 
 
 
@@ -103,4 +134,5 @@ export const UserService = {
     uploadUserImage,
     deleteUserImage,
     blockUser,
+    activeUser,
 };
