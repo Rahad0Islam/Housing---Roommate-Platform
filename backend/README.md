@@ -1,4 +1,19 @@
-# Housing & Roommate Platform API
+<div align="center">
+
+# 🏠 Housing & Roommate Platform API
+
+### Find a place. Share a space. Manage it with confidence.
+
+An end-to-end REST API for rental housing discovery, property management, bookings, roommate matching, owner verification, and rent collection.
+
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-ESM-3178C6?logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)
+
+</div>
 
 A production-oriented REST API for discovering rental housing, managing buildings and rooms, booking accommodation, handling owner verification, finding compatible roommates, and collecting rent and utility payments.
 
@@ -6,25 +21,20 @@ Built with Express 5, TypeScript, Prisma ORM 7, PostgreSQL, JWT authentication, 
 
 ## Features
 
-- JWT authentication with access and refresh tokens
-- HTTP-only cookie authentication with Bearer-token support
-- Role-based authorization for tenants, owners, and administrators
-- Credential registration with email OTP verification
-- Google authentication
-- Password recovery and reset flows
-- Building, flat, room, and amenity management
-- Room availability and rental configuration
-- Booking lifecycle management
-- Owner application and verification workflow
-- Roommate profiles and searchable roommate discovery
-- Monthly rent and utility-bill management
-- bKash booking and monthly-payment checkout
-- Cloudinary image and document uploads
-- Redis-backed OTP and payment-token storage
-- Gmail SMTP transactional email delivery
-- Role-scoped analytics dashboards
-- Centralized error handling and async request handling
-- Vercel-ready production bundle
+- 🔐 JWT authentication with access and refresh tokens
+- 👥 Role-based access for `TENANT`, `OWNER`, and `ADMIN`
+- 🏢 Building, flat, room, and amenity management
+- 📅 Booking lifecycle management with date-aware rent types
+- 🧑‍🤝‍🧑 Roommate profiles with preference-based search
+- ✅ Owner application and verification workflow
+- 💰 Monthly rent and utility-bill management
+- 💳 bKash booking and monthly-payment checkout
+- 📊 Admin, owner, and tenant analytics dashboards
+- 🖼️ Cloudinary image and verification-document uploads
+- ✉️ OTP, welcome, password-reset, and notification emails
+- ⚡ Redis-backed OTP and payment-token storage
+- ☁️ Vercel-ready ESM production bundle
+
 
 ## Technology Stack
 
@@ -90,10 +100,26 @@ backend/
 The API defines three roles:
 
 - `TENANT`: searches properties, creates bookings, makes payments, and manages roommate profiles
-- `OWNER`: manages properties, rooms, amenities, bills, and owner applications
-- `ADMIN`: manages platform-level operations, owner verification, users, and analytics
+- `OWNER`: manages owned buildings, flats, rooms, amenities, utility bills, and monthly bills
+- `ADMIN`: manages platform analytics, owner verification, users, and operational oversight
+
 
 Authentication also checks the current database record. Blocked and deleted accounts cannot access protected routes.
+
+## Architecture at a Glance
+
+```text
+Client / Frontend
+  │
+  │ Cookie: accessToken  or  Authorization: Bearer <token>
+  ▼
+Express 5 API ──► Auth + role middleware ──► Controllers ──► Services
+  │                                                │
+  ├── CORS, validation, async errors                ├── Prisma ──► PostgreSQL
+  ├── Cloudinary uploads                            ├── Redis ──► OTP / tokens
+  ├── Nodemailer                                    ├── bKash ──► payments
+  └── Global error handler                          └── Google ──► sign-in
+```
 
 ## API
 
@@ -115,6 +141,28 @@ Base path: `/api/v1/auth`
 | `POST` | `/reset-password` | Public | Reset a password |
 
 Access tokens are read from the `accessToken` cookie first, then from the `Authorization` header. Use `Authorization: Bearer <token>` for API clients that do not use cookies.
+
+#### Register body
+
+```json
+{
+  "name": "Ayesha Rahman",
+  "email": "ayesha@example.com",
+  "password": "StrongPass1!",
+  "patient": { "contactNumber": "+8801700000000" }
+}
+```
+
+#### Login body
+
+```json
+{
+  "email": "ayesha@example.com",
+  "password": "StrongPass1!"
+}
+```
+
+Passwords must contain at least six characters, including uppercase, lowercase, a number, and a special character.
 
 ### Buildings
 
@@ -167,6 +215,19 @@ Base path: `/api/v1/bookings`
 | `PATCH` | `/complete/:bookingId` | `ADMIN`, `OWNER`, `TENANT` | Complete a booking |
 
 Booking statuses include `PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`, `EXPIRED`, and `ON_GOING`.
+
+#### Create booking body
+
+```json
+{
+  "roomId": "6bf3c2c2-0d79-4f4c-bf56-4c9bf77a7a20",
+  "rentType": "SHORT_TERM",
+  "startDate": "2026-10-01T00:00:00.000Z",
+  "endDate": "2026-10-15T00:00:00.000Z"
+}
+```
+
+`SHORT_TERM` bookings cannot exceed 30 days. `LONG_TERM` bookings must be at least 90 days.
 
 ### Payments
 
@@ -263,6 +324,18 @@ Base path: `/api/v1/analytics`
 
 Analytics endpoints accept optional `from` and `to` query parameters for date filtering.
 
+```text
+GET /api/v1/analytics/owner?from=2026-01-01&to=2026-12-31
+```
+
+## 📦 Request Formats
+
+- JSON requests use `Content-Type: application/json`.
+- Image and document uploads use `multipart/form-data`.
+- Date values should be ISO-compatible strings.
+- UUID route parameters must be valid PostgreSQL UUIDs.
+- Search and list endpoints may accept pagination and filter query parameters where implemented.
+
 ## Standard Responses
 
 Successful responses use the following envelope:
@@ -277,31 +350,37 @@ Successful responses use the following envelope:
 }
 ```
 
-Error responses are normalized by the global error handler. Database errors are mapped where applicable, including:
+Error responses are normalized by the global error handler. In development, diagnostic details may be included; production responses hide internal error details.
+
+Database errors are mapped where applicable, including:
 
 | Prisma code | HTTP status | Meaning |
 | --- | --- | --- |
-| `P2002` | `409` | Duplicate record |
+| `P2002` | `400` | Duplicate key |
 | `P2003` | `400` | Foreign-key violation |
-| `P2025` | `404` | Record not found |
+| `P2025` | `400` | Required record not found |
 | `P1000` | `401` | Database authentication failure |
-| `P1001` | `503` | Database unavailable |
+| `P1001` | `400` | Database unavailable |
 
-## Data Model
+## 🗃️ Data Model
 
 The Prisma schema is split into focused files under `prisma/`:
 
-- `User`
-- `Owner`
-- `Building`
-- `Flat`
-- `Room`
-- `Booking`
-- `Amenity`
-- `MonthlyPay`
-- `Payment`
-- `UtilityBill`
-- `RoommateProfile`
+`User` · `Owner` · `Building` · `Flat` · `Room` · `Booking` · `Amenity` · `MonthlyPay` · `Payment` · `UtilityBill` · `RoommateProfile`
+
+Important enum groups:
+
+```text
+UserRole:              TENANT | OWNER | ADMIN
+UserStatus:            ACTIVE | BLOCKED | DELETED
+FlatStatus:            AVAILABLE | FULL | INACTIVE | MAINTENANCE
+RoomType:              SINGLE | SHARED | MASTER
+RoomStatus:            AVAILABLE | FULL | INACTIVE | MAINTENANCE
+RentType:              SHORT_TERM | LONG_TERM
+PaymentType:           BOOKING | MONTHLY_RENT | UTILITY | DEPOSIT
+MonthlyPaymentStatus:  PENDING | PAID | OVERDUE | WAIVED
+OwnerStatus:           PENDING | VERIFIED | REJECTED
+```
 
 The models use PostgreSQL UUIDs, timestamps, relation constraints, indexes, unique constraints, and decimal fields for monetary values.
 
@@ -354,8 +433,9 @@ Use production credentials and a public HTTPS callback URL in deployed environme
 - Node.js 20 or newer
 - PostgreSQL
 - Redis
-- Cloudinary account for uploads
 - SMTP account for email flows
+- Cloudinary account for uploads
+- Google OAuth client ID for Google sign-in
 - bKash merchant credentials for payment flows
 
 ### Installation
@@ -446,15 +526,16 @@ postman/Housing_roomMate_platform.json
 
 The collection currently focuses on authentication flows. Keep its base URL and auth path aligned with the application routes before using it as a complete API reference. This README documents the mounted routes from the current source code.
 
-## Security Notes
+## 🔒 Security Notes
 
-- Keep JWT, database, Redis, SMTP, Cloudinary, Google, and bKash credentials out of source control.
-- Use HTTPS in production so authentication cookies and payment callbacks are protected.
-- Use strong, unique JWT secrets.
+- Keep `.env`, JWT secrets, database credentials, Redis credentials, and provider keys out of source control.
+- Use HTTPS in production for authentication cookies and bKash callbacks.
+- Use long, unique access and refresh JWT secrets.
 - Replace or remove development seed credentials before production deployment.
-- Validate `APP_URL` and `FRONTEND_URL` carefully because CORS and payment redirects depend on them.
+- Validate `APP_URL` and `FRONTEND_URL` because CORS and payment redirects depend on them.
 - Restrict administrative endpoints to trusted administrator accounts.
+- The owner-application rejection route is currently missing its admin middleware in source; enable it before production.
 
-## License
+## 📄 License
 
 No project license has been specified yet.
