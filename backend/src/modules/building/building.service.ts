@@ -2,8 +2,9 @@ import { UserRole } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/appError";
 import httpStatus from "http-status";
-import { IBuilding } from "./building.interface";
+import { IBuilding, IbuildingSearchQuery } from "./building.interface";
 import { deleteImage, uploadImage } from "../../utils/cloudinary.utils";
+import { BuildingWhereInput } from "../../../generated/prisma/models";
 
 const createBuilding = async (
   payload: IBuilding,
@@ -68,11 +69,122 @@ const createBuilding = async (
 };
 
 
-const getAllBuildings = async () => {
+const getAllBuildings = async (query: IbuildingSearchQuery) => {
 
     //future add query params for filtering and pagination
-  const buildings = await prisma.building.findMany();
-  return buildings;
+
+     const limit = query.limit ? Number(query.limit) : 10;
+           const page = query.page ? Number(query.page) : 1;
+           const skip = (page - 1) * limit;
+           const sortBy = query.sortBy ? query.sortBy : "createdAt";
+           const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+       
+            const andCondition : BuildingWhereInput[] = [];
+
+            if(query.searchTerm){
+           andCondition.push({
+           OR:[
+               {
+                   name:{
+                       contains:query.searchTerm,
+                       mode:"insensitive"
+                   }
+               },
+               {
+                   description:{
+                       contains:query.searchTerm,
+                       mode:"insensitive"
+                   }
+               },{
+                    address:{
+                        contains:query.searchTerm,
+                        mode:"insensitive"
+                    }
+               },
+               {
+                     amenities:{
+                        some:{
+                            name:{
+                                contains:query.searchTerm,
+                                mode:"insensitive"
+                            }
+                        }
+                     }
+               },
+              
+               
+           ]
+       })
+       }
+
+        if(query.name){
+               andCondition.push({
+                   name:query.name
+               })
+           }
+            if(query.description){
+               andCondition.push({
+                   description:query.description
+               })
+           }
+            if(query.id){
+               andCondition.push({
+                   id:query.id
+               })
+           }
+
+           if(query.city){
+            andCondition.push({
+                city:query.city
+            })
+        }
+
+         if(query.numberOfFloors){
+            andCondition.push({
+                numberOfFloors:{
+                    lte:Number(query.numberOfFloors)
+                }
+            })
+        }
+          
+   
+       
+  const buildings = await prisma.building.findMany(
+    {
+      where: andCondition.length > 0 ? { AND: andCondition } : {},
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        amenities: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    }
+  );
+  
+   return {
+        data:buildings,
+        meta:{
+            page,
+            limit,
+            total:buildings.length,
+            totalPages:Math.ceil(buildings.length / limit)
+        }
+    };
 };
 
 const getBuildingByOwnerId = async (ownerId: string) => {

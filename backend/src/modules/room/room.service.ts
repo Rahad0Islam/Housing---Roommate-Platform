@@ -1,3 +1,4 @@
+import { BookingStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/appError";
 import { deleteImage, uploadImage } from "../../utils/cloudinary.utils";
@@ -117,6 +118,23 @@ const updateRoom = async (
 const getRoomById = async (roomId: string) => {
   const room = await prisma.room.findUnique({
     where: { id: roomId },
+    include: {
+       bookings:{
+         where:{
+            status: { in: [BookingStatus.ON_GOING , BookingStatus.CONFIRMED] }
+         },
+          include:{
+              tenant:{
+                select:{
+                  id:true,
+                  name:true,
+                  email:true,
+                  roommateProfile:true,
+                }
+              }
+          }
+       }
+    },
   });
 
   if (!room) {
@@ -132,6 +150,23 @@ const getRoomById = async (roomId: string) => {
 const getRoomsByFlatId = async (flatId: string) => {
   const rooms = await prisma.room.findMany({
     where: { flatId },
+     include: {
+       bookings:{
+         where:{
+            status: { in: [BookingStatus.ON_GOING , BookingStatus.CONFIRMED] }
+         },
+          include:{
+              tenant:{
+                select:{
+                  id:true,
+                  name:true,
+                  email:true,
+                  roommateProfile:true,
+                }
+              }
+          }
+       }
+    },
   });
 
   if (!rooms || rooms.length === 0) {

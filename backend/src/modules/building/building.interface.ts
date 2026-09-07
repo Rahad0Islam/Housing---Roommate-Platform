@@ -1,13 +1,4 @@
-
-// id             String     @id @default(uuid()) @db.Uuid
-//   ownerId        String     @db.Uuid
-//   name           String     @db.VarChar(255)
-//   address        String     @db.VarChar(500)
-//   description    String?    @db.Text
-//   numberOfFloors Int
-//   city           String     @db.VarChar(100)
-//   createdAt      DateTime   @default(now())
-//   updatedAt      DateTime   @updatedAt
+import { BuildingWhereInput }from "../../../generated/prisma/models";
 
 export interface IBuilding{
     id: string;
@@ -18,4 +9,13 @@ export interface IBuilding{
     city: string;
     buildingImage?: string;
     buildingImagePublicId?: string;
+}
+
+
+export interface IbuildingSearchQuery extends BuildingWhereInput {
+page?: string;
+  limit?: string;
+  sortBy?: string;
+  searchTerm?: string;
+  sortOrder?: 'asc' | 'desc';
 }

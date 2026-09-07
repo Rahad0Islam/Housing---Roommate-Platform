@@ -8,6 +8,8 @@ import { AppError } from "../../utils/appError";
 const createBuilding = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId!;
 
+
+
   const result = await buildingService.createBuilding(
     req.body,
     userId,
@@ -24,13 +26,16 @@ const createBuilding = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllBuildings = catchAsync(async (req: Request, res: Response) => {
-  const result = await buildingService.getAllBuildings();
+
+  const query = req.query ;
+  const result = await buildingService.getAllBuildings(query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Buildings retrieved successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
