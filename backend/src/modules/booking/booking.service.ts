@@ -213,9 +213,97 @@ const cancelBooking = async (bookingId: string, userId: string) => {
   return updatedBooking;
 };
 
+
+const onGoingBooking = async (bookingId: string, userId: string) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Check if the user is an admin or owner of the flat associated with the booking
+   if(user.role !==UserRole.ADMIN && user.role !== UserRole.OWNER){
+    throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to mark this booking as ongoing");
+   }
+
+  if (booking.status !== BookingStatus.CONFIRMED) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Only confirmed bookings can be marked as ongoing");
+  }
+
+  const updatedBooking = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: BookingStatus.ON_GOING },
+  });
+
+  
+  return updatedBooking;
+}
+const completeBooking = async (bookingId: string, userId: string) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Check if the user is an admin or owner of the flat associated with the booking
+   if(user.role !==UserRole.ADMIN && user.role !== UserRole.OWNER){
+    throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to mark this booking as completed");
+   }
+
+  if (booking.status !== BookingStatus.ON_GOING) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Only ongoing bookings can be completed");
+  }
+   //also availableBed should be increased by 1 in the room when booking is completed
+   const room = await prisma.room.findUnique({
+    where: { id: booking.roomId },
+  });
+
+  if (!room) {
+    throw new AppError(httpStatus.NOT_FOUND, "Room not found");
+  }
+
+  const updatedBooking = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: BookingStatus.COMPLETED },
+  });
+
+  await prisma.room.update({
+    where: { id: room.id },
+    data: {
+      availableBed: room.availableBed + 1,
+      availableFrom: room.availableFrom > new Date() ? room.availableFrom : new Date(),
+    },
+  });
+
+  
+  return updatedBooking;
+};
+
 export const bookingService = {
   createBooking,
   getBookingById,
   getAllbooking,
   cancelBooking,
+  onGoingBooking,
+  completeBooking,
 };

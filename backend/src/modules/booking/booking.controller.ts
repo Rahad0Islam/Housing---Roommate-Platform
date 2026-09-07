@@ -60,9 +60,38 @@ const cancelBooking = catchAsync(async (req:Request, res:Response) => {
 });
 
 
+const onGoingBooking = catchAsync(async (req:Request, res:Response) => {
+  const { bookingId } = req.params;
+  const userId = req.user?.userId!;
+
+  const result = await bookingService.onGoingBooking(bookingId as string, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Booking marked as ongoing successfully",
+    data: result,
+  });
+});
+
+const completeBooking = catchAsync(async (req:Request, res:Response) => {
+  const { bookingId } = req.params;
+  const userId = req.user?.userId!;
+
+  const result = await bookingService.completeBooking(bookingId as string, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Booking marked as completed successfully",
+    data: result,
+  });
+});
 export const bookingController = {
   createBooking,
   getBookingById,
   getAllbooking,
   cancelBooking,
+  onGoingBooking,
+  completeBooking,
 };

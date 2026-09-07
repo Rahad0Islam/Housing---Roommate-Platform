@@ -26,9 +26,18 @@ router.get("/",
     bookingController.getAllbooking
 );
 
-router.patch("/:bookingId/cancel",
+router.patch("/cancel/:bookingId",
     auth(UserRole.ADMIN, UserRole.OWNER, UserRole.TENANT),
     bookingController.cancelBooking
 );
 
+router.patch("/ongoing/:bookingId",
+    auth(UserRole.ADMIN, UserRole.OWNER),
+    bookingController.onGoingBooking
+);
+
+router.patch("/complete/:bookingId",
+    auth(UserRole.ADMIN, UserRole.OWNER, UserRole.TENANT),
+    bookingController.completeBooking
+);
 export const BookingRoutes = router;
