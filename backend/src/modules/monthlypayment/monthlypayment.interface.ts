@@ -1,4 +1,5 @@
 import { MonthlyPaymentStatus } from "../../../generated/prisma/client";
+import { MonthlyPayWhereInput } from "../../../generated/prisma/models";
 
 // model MonthlyPay {
 //   id        String  @id @default(uuid()) @db.Uuid
@@ -40,4 +41,13 @@ export interface ImonthlyPayment {
   createdAt: Date;
   updatedAt: Date;
   flatId: string; // Added flatId property
+}
+
+
+export interface ImonthlyPaymentSearchQuery extends MonthlyPayWhereInput {
+page?: string;
+  limit?: string;
+  sortBy?: string;
+  searchTerm?: string;
+  sortOrder?: 'asc' | 'desc';
 }

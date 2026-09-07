@@ -1,4 +1,5 @@
 import { BookingStatus, RentType } from "../../../generated/prisma/client";
+import { BookingWhereInput } from "../../../generated/prisma/models";
 
 
 
@@ -37,4 +38,12 @@ export interface IBooking {
   amount: number;
   startDate: Date;
   endDate: Date;
+}
+
+export interface IbookingSearchQuery extends BookingWhereInput {
+page?: string;
+  limit?: string;
+  sortBy?: string;
+  searchTerm?: string;
+  sortOrder?: 'asc' | 'desc';
 }

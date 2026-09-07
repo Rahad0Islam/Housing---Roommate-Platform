@@ -37,7 +37,7 @@ const getAllMonthlyPayments = catchAsync(async (req: Request, res: Response) => 
   const userId = req.user?.userId;
   const role = req.user?.role;
 
-  const monthlyPayments = await monthlyPaymentService.getAllMonthlyPayments(userId as string, role as string);
+  const monthlyPayments = await monthlyPaymentService.getAllMonthlyPayments(userId as string, role as string,req.query);
 
   sendResponse(res, {
     statusCode: 200,

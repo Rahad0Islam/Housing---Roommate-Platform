@@ -1,9 +1,10 @@
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/appError";
-import { ImonthlyPayment } from "./monthlypayment.interface";
+import { ImonthlyPayment, ImonthlyPaymentSearchQuery } from "./monthlypayment.interface";
 import httpStatus from "http-status";
 import { format, startOfMonth } from 'date-fns';
 import { BookingStatus } from "../../../generated/prisma/client";
+import { MonthlyPayWhereInput } from "../../../generated/prisma/models";
 
 const createMonthlyPayment = async (payload: ImonthlyPayment, userId: string) => {
 
@@ -127,39 +128,97 @@ const getMonthlyPaymentById = async (monthlyPaymentId: string, userId: string ,r
 
 //get all monthly payments using rbac
 
-const getAllMonthlyPayments = async (userId: string, role: string) => {
-  let monthlyPayments;
+const getAllMonthlyPayments = async (
+  userId: string,
+  role: string,
+  query: ImonthlyPaymentSearchQuery,
+) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy || "createdAt";
+  const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+
+  const andCondition: MonthlyPayWhereInput[] = [];
+
+  // Status filter
+  if (query.status) {
+    andCondition.push({
+      status: query.status,
+    });
+  }
+
+  // RBAC
   if (role === "TENANT") {
-    monthlyPayments = await prisma.monthlyPay.findMany({
-      where: { tenantId: userId },
-      include: {
-        room: true,
-        utility: true,
-        tenant: true,
-      },
+    andCondition.push({
+      tenantId: userId,
     });
-  } else if (role === "OWNER") {
-    monthlyPayments = await prisma.monthlyPay.findMany({
-      where: { utility: { ownerId: userId } },
-      include: {
-        room: true,
-        utility: true,
-        tenant: true,
-      },
-    });
-  } else if (role === "ADMIN") {
-    monthlyPayments = await prisma.monthlyPay.findMany({
-      include: {
-        room: true,
-        utility: true,
-        tenant: true,
+  }
+
+  if (role === "OWNER") {
+    andCondition.push({
+      utility: {
+        ownerId: userId,
       },
     });
   }
 
-  return monthlyPayments;
-};
+  // ADMIN doesn't need any additional condition
 
+  const whereCondition: MonthlyPayWhereInput = {
+    AND: andCondition,
+  };
+
+  // Total matching records
+  const total = await prisma.monthlyPay.count({
+    where: whereCondition,
+  });
+
+  if (total === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No monthly payments found",
+    );
+  }
+
+  // Paginated data
+  const monthlyPayments = await prisma.monthlyPay.findMany({
+    where: whereCondition,
+
+    skip,
+    take: limit,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
+    include: {
+      room: true,
+
+      utility: true,
+
+      tenant: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return {
+    data: monthlyPayments,
+
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
 
 export const monthlyPaymentService = {
   createMonthlyPayment,

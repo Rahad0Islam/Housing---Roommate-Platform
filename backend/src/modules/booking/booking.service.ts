@@ -1,9 +1,10 @@
 import { BookingStatus, RentType, UserRole } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/appError";
-import { IBooking } from "./booking.interface";
+import { IBooking, IbookingSearchQuery } from "./booking.interface";
 import httpStatus from "http-status";
 import { differenceInDays } from "date-fns";
+import { BookingWhereInput } from "../../../generated/prisma/models";
 
 const createBooking = async (payload: IBooking, userId: string) => {
   
@@ -142,50 +143,119 @@ const getBookingById = async (bookingId: string, userId: string) => {
   return booking;
 };
 
-const getAllbooking = async (userId: string) => {
+const getAllbooking = async (
+  userId: string,
+  query: IbookingSearchQuery,
+) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
 
-   const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const sortBy = query.sortBy || "createdAt";
+  const sortOrder = query.sortOrder || "desc";
+
+  const andCondition: BookingWhereInput[] = [];
+
+  // Filter by booking status
+  if (query.status) {
+    andCondition.push({
+      status: query.status,
+    });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
   });
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "User not found",
+    );
   }
 
-
-  //find all bookings using RBAC. tenant show their own bookings, owner show the bookings of their flats, admin show all bookings
-  let AllBookings;
-    if (user.role === UserRole.OWNER) {
-         AllBookings = await prisma.booking.findMany({
-            where: {
-                room: {
-                    flat: {
-                        building: {
-                            ownerId: userId,
-                        },
-                    },
-                },
-            },
-        });
-    }
-    if( user.role === UserRole.ADMIN) {
-        AllBookings = await prisma.booking.findMany();
-    }
-    if(user.role === UserRole.TENANT) {
-        AllBookings = await prisma.booking.findMany({
-            where: {
-                tenantId: userId,
-            },
-        });
-    }
-
-  if (!AllBookings || AllBookings.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No bookings found");
+  // RBAC condition
+  if (user.role === UserRole.OWNER) {
+    andCondition.push({
+      room: {
+        flat: {
+          building: {
+            ownerId: userId,
+          },
+        },
+      },
+    });
   }
 
-  return AllBookings;
+  if (user.role === UserRole.TENANT) {
+    andCondition.push({
+      tenantId: userId,
+    });
+  }
+
+  // ADMIN doesn't need an additional condition
+  // because admin can see all bookings.
+
+  const whereCondition: BookingWhereInput = {
+    AND: andCondition,
+  };
+
+  // Get total number of matching bookings
+  const total = await prisma.booking.count({
+    where: whereCondition,
+  });
+
+  if (total === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No bookings found",
+    );
+  }
+
+  // Get paginated bookings
+  const bookings = await prisma.booking.findMany({
+    where: whereCondition,
+
+    skip,
+    take: limit,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
+    include: {
+      room: {
+        include: {
+          flat: {
+            include: {
+              building: true,
+            },
+          },
+        },
+      },
+      tenant: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      payments: true,
+    },
+  });
+
+  return {
+    data: bookings,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
-   
 
 const cancelBooking = async (bookingId: string, userId: string) => {
   const booking = await prisma.booking.findUnique({

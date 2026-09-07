@@ -2,6 +2,7 @@ import {
   GenderPreference,
   PreferenceLevel,
 } from "../../../generated/prisma/client";
+import { RoommateProfileWhereInput } from "../../../generated/prisma/models";
 
 export interface ICreateRoommateProfile {
   bio?: string;
@@ -27,4 +28,13 @@ export interface IUpdateRoommateProfile {
   noiseTolerance?: PreferenceLevel;
   sleepTime?: string;
   wakeTime?: string;
+}
+
+export interface IRoommateSearchQuery extends RoommateProfileWhereInput {
+page?: string;
+  limit?: string;
+  sortBy?: string;
+  searchTerm?: string;
+  sortOrder?: 'asc' | 'desc';
+  
 }

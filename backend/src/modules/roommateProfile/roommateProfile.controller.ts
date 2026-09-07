@@ -82,7 +82,7 @@ const deleteRoommateProfile = catchAsync(
 const findAllRoommateProfiles = catchAsync(
   async (req: Request, res: Response) => {
     const result =
-      await RoommateProfileService.findAllRoommateProfiles();
+      await RoommateProfileService.findAllRoommateProfiles(req.query);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

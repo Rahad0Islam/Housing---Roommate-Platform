@@ -34,8 +34,9 @@ const getBookingById = catchAsync(async (req:Request, res:Response) => {
 
 const getAllbooking = catchAsync(async (req:Request, res:Response) => {
   const userId = req.user?.userId!;
+  const query = req.query;
 
-  const result = await bookingService.getAllbooking(userId);
+  const result = await bookingService.getAllbooking(userId, query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

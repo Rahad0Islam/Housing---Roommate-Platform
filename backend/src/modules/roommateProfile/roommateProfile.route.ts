@@ -42,7 +42,7 @@ router.delete(
 
 router.get(
   "/",
-  auth(UserRole.TENANT),
+  auth(UserRole.TENANT, UserRole.ADMIN,UserRole.OWNER),
   RoommateProfileController.findAllRoommateProfiles
 );
 
