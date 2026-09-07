@@ -21,4 +21,10 @@ router.delete(
   UserController.deleteUserImage
 );
 
+router.patch(
+  "/block-user/:userId",
+  auth(UserRole.ADMIN),
+  UserController.blockUser
+);
+
 export const UserProfileImageRoutes = router;

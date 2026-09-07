@@ -33,7 +33,21 @@ const deleteUserImage = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const blockUser = catchAsync(async (req: Request, res: Response) => {
+	const { userId } = req.params;
+	const adminId = req.user!.userId;
+	const result = await UserService.blockUser(userId as string, adminId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User blocked successfully",
+		data: result,
+	});
+});
+
 export const UserController = {
 	imageUpload,
 	deleteUserImage,
+	blockUser,
 };

@@ -17,6 +17,7 @@ import { AmenityRoutes } from "./modules/amenity/amenity.route";
 import { RoommateProfileRoutes } from "./modules/roommateProfile/roommateProfile.route";
 import { UserProfileImageRoutes } from "./modules/user/user.route";
 import { OwnerRoutes } from "./modules/owner/owner.route";
+import { AnalyticsRoutes } from "./modules/analytics/analytics.route";
 
 const app: Application = express();
 app.use(
@@ -45,6 +46,7 @@ app.use("/api/v1/amenities", AmenityRoutes);
 app.use("/api/v1/roommate-profiles",RoommateProfileRoutes);
 app.use("/api/v1/userprofileimage",UserProfileImageRoutes);
 app.use("/api/v1/owners",OwnerRoutes);
+app.use("/api/v1/analytics", AnalyticsRoutes);
 
 	
 

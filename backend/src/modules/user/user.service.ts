@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/appError";
 import httpStatus from "http-status";
 import { deleteImage, uploadImage } from "../../utils/cloudinary.utils";
+import { UserStatus } from "../../../generated/prisma/enums";
 
 const uploadUserImage = async (file: Express.Multer.File, userId: string)=> {
 
@@ -64,8 +65,42 @@ export const deleteUserImage = async (userId: string) => {
     return updatedUser;
 };
 
+const blockUser = async (userId: string, adminId: string) => {
+    if (userId === adminId) {
+        throw new AppError(httpStatus.FORBIDDEN, "You cannot block your own account");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (user.userStatus === UserStatus.BLOCKED) {
+        throw new AppError(httpStatus.BAD_REQUEST, "User is already blocked");
+    }
+
+    return prisma.user.update({
+        where: { id: userId },
+        data: { userStatus: UserStatus.BLOCKED },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            userStatus: true,
+            updatedAt: true,
+        },
+    });
+};
+
+
+
 
 export const UserService = {
     uploadUserImage,
     deleteUserImage,
+    blockUser,
 };
