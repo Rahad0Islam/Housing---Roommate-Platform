@@ -3,6 +3,7 @@
 import { toast } from "@/components/ui/toast";
 import { useGoogleLogin } from "@/hooks/auth.hook";
 import { GoogleLogin } from "@react-oauth/google";
+import { useRouter } from "next/navigation";
 
 
 
@@ -10,6 +11,7 @@ import { GoogleLogin } from "@react-oauth/google";
 
 const GoogleLoginComponent = () => {
 const {mutate:googleLogin} = useGoogleLogin();
+const router = useRouter();
 
 const handleGoogleLoginSuccess = (response: {credential?:string}) => {
 
@@ -31,6 +33,7 @@ const handleGoogleLoginSuccess = (response: {credential?:string}) => {
                 description: "You have been logged in successfully.",
                 type: "success",
               });
+            router.push("/dashboard");
         },
         onError:(error:any)=>{
             toast.add({

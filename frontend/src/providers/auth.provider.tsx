@@ -15,7 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data, isLoading: queryLoading, isError } = useUser();
+  const { data, isLoading: queryLoading, isError, isFetching } = useUser();
   const [isMounting, setIsMounting] = useState(true);
   
   useEffect(() => {
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const user = data?.data || null;
   const isAuthenticated = !!user;
-  const isLoading = isMounting || queryLoading;
+  const isLoading = isMounting || queryLoading || (isFetching && !user);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, isAuthenticated }}>

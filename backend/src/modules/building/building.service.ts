@@ -211,6 +211,14 @@ const getBuildingByOwnerId = async (ownerId: string) => {
 const getBuildingById = async (buildingId: string) => {
   const building = await prisma.building.findUnique({
     where: { id: buildingId },
+    include: {
+      amenities: true,
+      flats: {
+        include: {
+          rooms: true
+        }
+      }
+    }
   });
 
   if (!building) {

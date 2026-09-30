@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
 import { AppError } from "../../utils/appError";
+import config from "../../config/config";
 
 const registerUser = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
@@ -25,13 +26,13 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 	const { accessToken, refreshToken, user } = result;
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
 	});
 	res.cookie("refreshToken", refreshToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 	});
@@ -55,13 +56,13 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
 	});
 	res.cookie("refreshToken", refreshToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 	});
@@ -105,13 +106,13 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
 	});
 	res.cookie("refreshToken", newRefreshToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 	});
@@ -134,13 +135,13 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
 
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
 	});
 	res.cookie("refreshToken", refreshToken, {
 		httpOnly: true,
-		secure: false,
+		secure: true,
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 	});
@@ -177,8 +178,29 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
 		data: null,
 	});
 });
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+	res.clearCookie("accessToken", {
+		httpOnly: true,
+		secure: true,
+		sameSite: "none",
+	});
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		secure: config.node_env === "production",
+		sameSite: config.node_env === "production" ? "none" : "lax",
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User logged out successfully",
+		data: null,
+	});
+});
+
 export const AuthController = {
 	registerUser,
+	logoutUser,
 	loginUser,
 	getMe,
 	refreshToken,

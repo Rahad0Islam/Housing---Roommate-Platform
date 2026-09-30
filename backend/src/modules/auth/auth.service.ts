@@ -384,7 +384,7 @@ const googleLogin = async (payload: googleLoginPayload) => {
 				);
 			}
 
-			await prisma.user.update({
+			user = await prisma.user.update({
 				where: {
 					id: isUserExistsWithCredentials.id,
 				},
