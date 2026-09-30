@@ -3,6 +3,10 @@ import apiClient from "@/lib/apiClient"
 
 
 
+export const userRegister = (payload: { email: string, name: string, role: string }) => {
+     return apiClient("/auth/register",{method: "POST",body:payload})
+}
+
 export const userLogin = (payload:{email:string,password:string})=>{
      return apiClient("/auth/login",{method: "POST",body:payload})
 }
@@ -23,3 +27,11 @@ export const getMe = ()=>{
 export const googleLogin = (payload:{idToken:string})=>{
     return apiClient("/auth/google",{method: "POST",body:payload})
 } 
+
+export const forgotPassword = (payload: { email: string }) => {
+    return apiClient("/auth/forgot-password", { method: "POST", body: payload });
+}
+
+export const resetPassword = (payload: { email: string, otp: string, newPassword: string }) => {
+    return apiClient("/auth/reset-password", { method: "POST", body: payload });
+}

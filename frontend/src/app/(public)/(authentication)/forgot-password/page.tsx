@@ -7,40 +7,43 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 
-import { useLogin } from "@/hooks/auth.hook";
-import { loginSchema, LoginFormData } from "@/lib/validations/auth";
+import { useForgotPassword } from "@/hooks/auth.hook";
+import { forgotPasswordSchema, ForgotPasswordFormData } from "@/lib/validations/auth";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import GoogleLogin from "@/components/modules/google-login/GoogleLogin";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
-  const loginMutation = useLogin();
+  const forgotMutation = useForgotPassword();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     setError(null);
+    setSuccess(null);
     try {
-      const response = await loginMutation.mutateAsync(data);
+      const response = await forgotMutation.mutateAsync(data);
       if (response?.success) {
-        // Handle redirect based on user role if available, or just go to dashboard
-        router.push("/dashboard"); 
+        setSuccess("An OTP has been sent to your email address.");
+        setTimeout(() => {
+          router.push(`/reset-password?email=${encodeURIComponent(data.email)}`);
+        }, 2000);
       } else {
-        setError("Invalid email or password");
+        setError(response?.message || "Failed to process request");
       }
     } catch (err: any) {
-      setError(err?.response?._data?.message || "An error occurred during login. Please try again.");
+      setError(err?.response?._data?.message || "An error occurred. Please try again.");
     }
   };
 
@@ -49,18 +52,18 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Welcome back
+            Forgot password?
           </h1>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Sign in to manage your housing and roommates.
+            No worries, we'll send you reset instructions.
           </p>
         </div>
 
         <Card className="border-none shadow-xl shadow-zinc-200/50 dark:shadow-none">
           <CardHeader>
-            <CardTitle>Sign in</CardTitle>
+            <CardTitle>Reset Password</CardTitle>
             <CardDescription>
-              Enter your email and password to access your account.
+              Enter the email associated with your account.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -68,6 +71,11 @@ export default function LoginPage() {
               {error && (
                 <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/20">
                   {error}
+                </div>
+              )}
+              {success && (
+                <div className="rounded-md bg-green-50 p-3 text-sm text-green-500 dark:bg-green-900/20">
+                  {success}
                 </div>
               )}
               
@@ -85,65 +93,28 @@ export default function LoginPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  className={errors.password ? "border-red-500" : ""}
-                />
-                {errors.password && (
-                  <p className="text-xs text-red-500">{errors.password.message}</p>
-                )}
-              </div>
-
               <Button
                 type="submit"
                 className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-                disabled={isSubmitting || loginMutation.isPending}
+                disabled={isSubmitting || forgotMutation.isPending || !!success}
               >
-                {(isSubmitting || loginMutation.isPending) ? (
+                {(isSubmitting || forgotMutation.isPending) ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    Sending OTP...
                   </>
                 ) : (
-                  "Sign in"
+                  "Send OTP"
                 )}
               </Button>
             </form>
-
-            <div className="relative mt-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <GoogleLogin />
-            </div>
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4 text-sm text-zinc-600 dark:text-zinc-400">
-            Don&apos;t have an account?{" "}
             <Link
-              href="/register"
-              className="ml-1 font-medium text-zinc-900 hover:underline dark:text-zinc-50"
+              href="/login"
+              className="font-medium text-zinc-900 hover:underline dark:text-zinc-50"
             >
-              Sign up
+              Back to log in
             </Link>
           </CardFooter>
         </Card>
