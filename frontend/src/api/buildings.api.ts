@@ -20,3 +20,29 @@ export const getBuildingById = async (id: string) => {
     method: "GET",
   });
 };
+
+export const createBuilding = async (payload: any) => {
+  return apiClient<ResponseEnvelope<Building>>("/buildings", {
+    method: "POST",
+    body: payload,
+  });
+};
+
+export const updateBuilding = async (id: string, payload: any) => {
+  return apiClient<ResponseEnvelope<Building>>(`/buildings/${id}`, {
+    method: "PATCH",
+    body: payload,
+  });
+};
+
+export const deleteBuilding = async (id: string) => {
+  return apiClient<ResponseEnvelope<Building>>(`/buildings/${id}`, {
+    method: "DELETE",
+  });
+};
+
+export const getOwnerBuildings = async () => {
+  return apiClient<ResponseEnvelope<BuildingWithDetails[]>>("/buildings/owner", {
+    method: "GET",
+  });
+};

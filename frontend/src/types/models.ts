@@ -1,3 +1,9 @@
+export interface ResponseEnvelope<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
 export enum UserRole {
   ADMIN = "ADMIN",
   OWNER = "OWNER",
@@ -30,6 +36,11 @@ export interface Building {
   ownerId: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface BuildingWithDetails extends Building {
+  flats?: any[];
+  rooms?: any[];
 }
 
 export interface Flat {
