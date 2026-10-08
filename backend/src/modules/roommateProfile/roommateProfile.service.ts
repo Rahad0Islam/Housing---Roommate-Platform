@@ -354,6 +354,112 @@ const findRoommateProfileById = async (id: string) => {
 };
 
 
+const getBestMatches = async (userId: string) => {
+  // 1. Get the current user's profile
+  const currentUserProfile = await prisma.roommateProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!currentUserProfile) {
+    throw new AppError(httpStatus.BAD_REQUEST, "You need to create a roommate profile first to find matches.");
+  }
+
+  // 2. Get all other profiles
+  const otherProfiles = await prisma.roommateProfile.findMany({
+    where: {
+      userId: {
+        not: userId, // exclude current user
+      },
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          profileImage: true,
+        },
+      },
+    },
+  });
+
+  // 3. Score each profile
+  const scoredMatches = otherProfiles.map((profile) => {
+    let score = 100; // Base score
+
+    // Gender Preference Match
+    if (currentUserProfile.genderPreference !== profile.genderPreference) {
+      if (currentUserProfile.genderPreference !== 'ANY' && profile.genderPreference !== 'ANY') {
+        score -= 20;
+      } else {
+        score -= 5;
+      }
+    }
+
+    // Budget match
+    const maxMinBudget = Math.max(Number(currentUserProfile.budgetMin), Number(profile.budgetMin));
+    const minMaxBudget = Math.min(Number(currentUserProfile.budgetMax), Number(profile.budgetMax));
+    
+    if (maxMinBudget > minMaxBudget) {
+      const diff = maxMinBudget - minMaxBudget;
+      score -= Math.min(30, diff / 50); 
+    } else {
+      score += 10;
+    }
+
+    // Lifestyle matching
+    const levelToNumber = (level: string) => {
+      if (level === 'LOW') return 1;
+      if (level === 'MEDIUM') return 2;
+      return 3;
+    };
+
+    // Cleanliness
+    const cleanDiff = Math.abs(levelToNumber(currentUserProfile.cleanlinessLevel) - levelToNumber(profile.cleanlinessLevel));
+    score -= cleanDiff * 10;
+
+    // Noise Tolerance
+    const noiseDiff = Math.abs(levelToNumber(currentUserProfile.noiseTolerance) - levelToNumber(profile.noiseTolerance));
+    score -= noiseDiff * 10;
+
+    // Smoking
+    if (currentUserProfile.smokingAllowed !== profile.smokingAllowed) {
+      score -= 15;
+    }
+
+    // Pets
+    if (currentUserProfile.petsAllowed !== profile.petsAllowed) {
+      score -= 10;
+    }
+
+    // Sleep/Wake times
+    const diffHours = (date1: Date, date2: Date) => {
+      let diffTime = Math.abs(date2.getTime() - date1.getTime());
+      let hours = diffTime / (1000 * 60 * 60);
+      return Math.min(hours, 24 - hours);
+    };
+
+    const sleepDiff = diffHours(currentUserProfile.sleepTime, profile.sleepTime);
+    const wakeDiff = diffHours(currentUserProfile.wakeTime, profile.wakeTime);
+
+    score -= (sleepDiff * 3);
+    score -= (wakeDiff * 3);
+
+    const finalScore = Math.max(0, Math.min(100, Math.round(score)));
+
+    return {
+      ...profile,
+      matchScore: finalScore,
+    };
+  });
+
+  // Sort by highest score
+  scoredMatches.sort((a, b) => b.matchScore - a.matchScore);
+
+  return scoredMatches;
+};
+
+
 export const RoommateProfileService = {
   createRoommateProfile,
   getMyRoommateProfile,
@@ -361,4 +467,5 @@ export const RoommateProfileService = {
   deleteRoommateProfile,
   findAllRoommateProfiles,
   findRoommateProfileById,
+  getBestMatches,
 };

@@ -37,6 +37,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         ...baseLinks,
         { name: "My Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
         { name: "Monthly Bills", href: "/dashboard/monthly-bills", icon: ReceiptIcon },
+        { name: "Find Roommates", href: "/dashboard/roommates", icon: Users },
         { name: "Apply as Owner", href: "/dashboard/apply-owner", icon: Building2 },
         { name: "Browse Properties", href: "/buildings", icon: Building },
       ];

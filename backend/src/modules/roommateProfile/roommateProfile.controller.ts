@@ -109,6 +109,24 @@ const findRoommateProfileById = catchAsync(
   }
 );
 
+const getBestMatches = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+
+    const result = await RoommateProfileService.getBestMatches(
+      userId as string
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Best roommate matches retrieved successfully",
+      data: result,
+    });
+  }
+);
+
+
 export const RoommateProfileController = {
   createRoommateProfile,
   getMyRoommateProfile,
@@ -116,4 +134,5 @@ export const RoommateProfileController = {
   deleteRoommateProfile,
   findAllRoommateProfiles,
   findRoommateProfileById,
+  getBestMatches,
 };
