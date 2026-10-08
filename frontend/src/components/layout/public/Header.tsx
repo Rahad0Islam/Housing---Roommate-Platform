@@ -25,6 +25,7 @@ export function Header() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about-us" },
+    { name: "Find Buildings", href: "/buildings" },
   ];
 
   const isActive = (path: string) => pathname === path;
