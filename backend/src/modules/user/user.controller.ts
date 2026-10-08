@@ -59,9 +59,22 @@ const activeUser = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+	const result = await UserService.getAllUsers(req.query);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Users retrieved successfully",
+		data: result.data,
+        meta: result.meta,
+	});
+});
+
 export const UserController = {
 	imageUpload,
 	deleteUserImage,
 	blockUser,
 	activeUser,
+	getAllUsers,
 };

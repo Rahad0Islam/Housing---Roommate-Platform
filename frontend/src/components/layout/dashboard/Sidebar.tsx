@@ -9,6 +9,7 @@ import {
   Home, 
   DoorOpen, 
   CalendarCheck, 
+  Users,
   UserCircle,
   LogOut,
   Building,
