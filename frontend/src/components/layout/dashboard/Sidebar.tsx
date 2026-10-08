@@ -44,6 +44,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         ...baseLinks,
         { name: "My Buildings", href: "/dashboard/buildings", icon: Building2 },
         { name: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
+        { name: "Utility Bills", href: "/dashboard/utility-bills", icon: Home },
       ];
     }
 

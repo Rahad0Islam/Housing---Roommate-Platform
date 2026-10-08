@@ -205,6 +205,7 @@ const getBuildingByOwnerId = async (ownerId: string) => {
           email: true,
         },
       },
+      flats: true,
     },
   });
 
