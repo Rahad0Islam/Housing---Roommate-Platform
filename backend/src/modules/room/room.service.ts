@@ -169,11 +169,8 @@ const getRoomsByFlatId = async (flatId: string) => {
     },
   });
 
-  if (!rooms || rooms.length === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No rooms found for this flat"
-    );
+  if (!rooms) {
+    return [];
   }
 
   return rooms;

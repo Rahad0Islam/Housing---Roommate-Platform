@@ -26,11 +26,13 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b bg-white dark:bg-gray-900 px-4 md:px-6 shadow-sm">
       <div className="flex items-center gap-4 md:hidden">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Sidebar</span>
-            </Button>
+          <SheetTrigger
+            render={
+              <Button variant="ghost" size="icon" className="md:hidden" />
+            }
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar</span>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72">
             <Sidebar onNavigate={() => setIsOpen(false)} />

@@ -53,3 +53,23 @@ export const getOwnerBuildings = async (
   const url = queryString ? `/buildings/owner?${queryString}` : "/buildings/owner";
   return await apiClient<IApiResponse<IBuilding[]>>(url, { method: "GET" });
 };
+
+export const createBuilding = async (data: FormData): Promise<IApiResponse<IBuilding>> => {
+  return await apiClient<IApiResponse<IBuilding>>("/buildings", {
+    method: "POST",
+    body: data,
+  });
+};
+
+export const updateBuilding = async (payload: { id: string; data: FormData }): Promise<IApiResponse<IBuilding>> => {
+  return await apiClient<IApiResponse<IBuilding>>(`/buildings/${payload.id}`, {
+    method: "PATCH",
+    body: payload.data,
+  });
+};
+
+export const deleteBuilding = async (id: string): Promise<IApiResponse<null>> => {
+  return await apiClient<IApiResponse<null>>(`/buildings/${id}`, {
+    method: "DELETE",
+  });
+};

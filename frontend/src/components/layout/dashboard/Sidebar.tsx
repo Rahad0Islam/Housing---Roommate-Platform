@@ -43,8 +43,6 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
       return [
         ...baseLinks,
         { name: "My Buildings", href: "/dashboard/buildings", icon: Building2 },
-        { name: "Flats", href: "/dashboard/flats", icon: Home },
-        { name: "Rooms", href: "/dashboard/rooms", icon: DoorOpen },
         { name: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
       ];
     }
