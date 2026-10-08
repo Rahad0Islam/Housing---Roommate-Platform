@@ -43,7 +43,7 @@ export default function UtilityBillsPage() {
   });
 
   const { data: flatsRes, isLoading: isLoadingFlats } = useFlatsByBuildingId(selectedBuildingId);
-  const flats = flatsRes?.data?.flats || [];
+  const flats = (Array.isArray(flatsRes?.data) ? flatsRes?.data : (flatsRes?.data as any)?.flats) || [];
 
   const handleCreateBill = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +112,7 @@ export default function UtilityBillsPage() {
                 <Select 
                   value={selectedBuildingId} 
                   onValueChange={(val) => {
-                    setSelectedBuildingId(val);
+                    setSelectedBuildingId(val as string);
                     setFormData({...formData, flatId: ""}); // Reset flat when building changes
                   }}
                 >
@@ -133,7 +133,7 @@ export default function UtilityBillsPage() {
                 <Label htmlFor="flatId">Select Flat</Label>
                 <Select 
                   value={formData.flatId} 
-                  onValueChange={(val) => setFormData({...formData, flatId: val})}
+                  onValueChange={(val) => setFormData({...formData, flatId: val as string})}
                   disabled={!selectedBuildingId || isLoadingFlats}
                 >
                   <SelectTrigger>

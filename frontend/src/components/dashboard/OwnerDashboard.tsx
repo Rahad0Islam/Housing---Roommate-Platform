@@ -45,10 +45,10 @@ export function OwnerDashboard() {
           <p className="text-muted-foreground">How your properties are performing.</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild>
+          <Button>
             <Link href="/dashboard/buildings">Manage Buildings</Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline">
             <Link href="/dashboard/bookings">View Bookings</Link>
           </Button>
         </div>
@@ -123,7 +123,7 @@ export function OwnerDashboard() {
           <Building2 className="h-12 w-12 text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No properties yet</h3>
           <p className="text-gray-500 max-w-sm mt-1 mb-4">Start by adding your first building to manage flats and rooms.</p>
-          <Button asChild>
+          <Button>
             <Link href="/dashboard/buildings">Add Building</Link>
           </Button>
         </div>

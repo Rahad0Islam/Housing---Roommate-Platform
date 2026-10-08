@@ -106,7 +106,7 @@ export default function OwnerRoomsPage({ params }: { params: Promise<{ buildingI
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="roomType">Room Type</Label>
-                  <Select value={formData.roomType} onValueChange={v => setFormData({...formData, roomType: v})}>
+                  <Select value={formData.roomType} onValueChange={(v) => setFormData({...formData, roomType: v as string})}>
                     <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="SINGLE">Single</SelectItem>

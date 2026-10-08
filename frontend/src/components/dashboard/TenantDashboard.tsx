@@ -45,10 +45,10 @@ export function TenantDashboard() {
           <p className="text-muted-foreground">Manage your bookings and payments.</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild>
+          <Button>
             <Link href="/buildings">Find a Room</Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline">
             <Link href="/dashboard/bookings">My Bookings</Link>
           </Button>
         </div>
@@ -92,7 +92,7 @@ export function TenantDashboard() {
           <Search className="h-12 w-12 text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No bookings yet</h3>
           <p className="text-gray-500 max-w-sm mt-1 mb-4">You haven&apos;t booked any rooms yet. Browse our properties to find your next home.</p>
-          <Button asChild>
+          <Button>
             <Link href="/buildings">Browse Properties</Link>
           </Button>
         </div>

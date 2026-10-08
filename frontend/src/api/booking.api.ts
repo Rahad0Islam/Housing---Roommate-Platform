@@ -1,7 +1,7 @@
 import apiClient from "@/lib/apiClient";
 import { IApiResponse } from "@/types/building.types";
 
-export const getBookings = async (query?: any): Promise<IApiResponse<any[]>> => {
+export const getBookings = async (query?: any): Promise<IApiResponse<any>> => {
   const queryParams = new URLSearchParams();
   if (query) {
     if (query.page) queryParams.append("page", query.page.toString());
@@ -9,7 +9,7 @@ export const getBookings = async (query?: any): Promise<IApiResponse<any[]>> => 
   }
   const queryString = queryParams.toString();
   const url = queryString ? `/bookings?${queryString}` : "/bookings";
-  return await apiClient<IApiResponse<any[]>>(url, { method: "GET" });
+  return await apiClient<IApiResponse<any>>(url, { method: "GET" });
 };
 
 export const cancelBooking = async (id: string): Promise<IApiResponse<any>> => {

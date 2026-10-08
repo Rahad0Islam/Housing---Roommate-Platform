@@ -326,7 +326,7 @@ export default function RoomDetailsPage({
                   <div className="mt-4 space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                     <div className="space-y-2">
                       <Label>Rent Type</Label>
-                      <Select value={rentType} onValueChange={setRentType}>
+                      <Select value={rentType} onValueChange={(val) => setRentType(val as string)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select rent type" />
                         </SelectTrigger>

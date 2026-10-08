@@ -21,7 +21,7 @@ export default function OwnerFlatsPage({ params }: { params: Promise<{ buildingI
   const building = buildingRes?.data;
 
   const { data: flatsRes, isLoading } = useFlatsByBuildingId(buildingId);
-  const flats = flatsRes?.data?.flats || [];
+  const flats = (Array.isArray(flatsRes?.data) ? flatsRes?.data : (flatsRes?.data as any)?.flats) || [];
   
   const { mutate: createFlat, isPending: isCreating } = useCreateFlat();
   const { mutate: deleteFlat, isPending: isDeleting } = useDeleteFlat();
