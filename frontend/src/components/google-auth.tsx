@@ -19,7 +19,7 @@ export function GoogleAuth() {
               {
                 onSuccess: () => {
                   toast.success("Successfully logged in with Google");
-                  router.push("/"); // Redirect to home or dashboard
+                  router.push("/dashboard"); // Redirect to home or dashboard
                 },
                 onError: (error: any) => {
                   toast.error("Google login failed", {

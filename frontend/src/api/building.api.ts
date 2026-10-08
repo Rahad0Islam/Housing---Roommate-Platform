@@ -39,3 +39,17 @@ export const getBuildingById = async (
     method: "GET",
   });
 };
+
+export const getOwnerBuildings = async (
+  query?: IBuildingSearchQuery
+): Promise<IApiResponse<IBuilding[]>> => {
+  const queryParams = new URLSearchParams();
+  if (query) {
+    if (query.page) queryParams.append("page", query.page.toString());
+    if (query.limit) queryParams.append("limit", query.limit.toString());
+    if (query.searchTerm) queryParams.append("searchTerm", query.searchTerm);
+  }
+  const queryString = queryParams.toString();
+  const url = queryString ? `/buildings/owner?${queryString}` : "/buildings/owner";
+  return await apiClient<IApiResponse<IBuilding[]>>(url, { method: "GET" });
+};

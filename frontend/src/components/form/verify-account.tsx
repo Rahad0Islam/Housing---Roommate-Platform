@@ -66,7 +66,7 @@ export function VerifyAccountForm() {
         });
         // Backend verification actually returns tokens and sets cookies, so user is now logged in.
         // Redirect to dashboard/home
-        router.push("/");
+        router.push("/dashboard");
       },
       onError: (error: any) => {
         toast.error("Verification failed", {
