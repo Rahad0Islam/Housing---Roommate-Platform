@@ -67,17 +67,12 @@ const createBkashPayment = async (payload: IBkashPayment, userId: string) => {
 		const result = await response.json();
 
     const isPaymentExists = await tx.payment.findUnique({
-    where: { 
-        tenantId: userId,
-        merchantInvoiceNumber: result.merchantInvoiceNumber,
-    },
-    
-  });
+        where: { merchantInvoiceNumber: result.merchantInvoiceNumber },
+    });
      
   if( isPaymentExists){
      await tx.payment.update({
         where: { 
-            tenantId: userId,
             merchantInvoiceNumber: result.merchantInvoiceNumber,
         },
         data: {
@@ -270,17 +265,12 @@ const   transactionResult = await prisma.$transaction(async (tx) => {
 		const result = await response.json();
 
       const isPaymentExists = await tx.payment.findUnique({
-    where: { 
-        tenantId: userId,
-        merchantInvoiceNumber: result.merchantInvoiceNumber,
-    },
-    
-  });
+        where: { merchantInvoiceNumber: result.merchantInvoiceNumber },
+      });
      
   if( isPaymentExists){
      await tx.payment.update({
         where: { 
-            tenantId: userId,
             merchantInvoiceNumber: result.merchantInvoiceNumber,
         },
         data: {
