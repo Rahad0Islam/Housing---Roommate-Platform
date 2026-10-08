@@ -159,7 +159,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/tenant/bookings/${excutePaymentResult.merchantInvoiceNumber}?status=cancelled` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -169,7 +169,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/tenant/bookings/${excutePaymentResult.merchantInvoiceNumber}?status=cancelled` };
         }
         else if (status === "success") {
 
@@ -199,7 +199,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
             });
 
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=success` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/tenant/bookings/${excutePaymentResult.merchantInvoiceNumber}?status=success` };
 
         }  
 
@@ -361,7 +361,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/tenant/rent?status=cancelled` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -371,7 +371,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/tenant/rent?status=cancelled` };
         }
         else if (status === "success") {
 
@@ -393,7 +393,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                 },
             });
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=success` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/tenant/rent?status=success` };
 
         }  
 

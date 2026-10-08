@@ -32,7 +32,7 @@ router.delete(
   buildingController.deleteBuilding
 );
 
-router.get("/owner", buildingController.getBuildingsByOwnerId);
+router.get("/owner", auth(UserRole.OWNER, UserRole.ADMIN), buildingController.getBuildingsByOwnerId);
 
 router.get("/:id", buildingController.getBuildingById);
 
