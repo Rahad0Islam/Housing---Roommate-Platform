@@ -9,10 +9,10 @@ import {
   Home, 
   DoorOpen, 
   CalendarCheck, 
-  Users, 
   UserCircle,
   LogOut,
-  Building
+  Building,
+  ReceiptIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
       return [
         ...baseLinks,
         { name: "My Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
+        { name: "Monthly Bills", href: "/dashboard/monthly-bills", icon: ReceiptIcon },
         { name: "Browse Properties", href: "/buildings", icon: Building },
       ];
     }

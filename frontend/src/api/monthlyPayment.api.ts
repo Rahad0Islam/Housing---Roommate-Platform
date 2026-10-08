@@ -7,3 +7,9 @@ export const createMonthlyBill = async (payload: { flatId: string; utilityId: st
     body: payload,
   });
 };
+
+export const getAllMonthlyPayments = async (): Promise<IApiResponse<any>> => {
+  return await apiClient<IApiResponse<any>>("/monthly-payments/get-all-monthly-bills", {
+    method: "GET",
+  });
+};

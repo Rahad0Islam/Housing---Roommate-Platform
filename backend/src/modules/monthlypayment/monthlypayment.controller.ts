@@ -43,7 +43,8 @@ const getAllMonthlyPayments = catchAsync(async (req: Request, res: Response) => 
     statusCode: 200,
     success: true,
     message: "Monthly payments retrieved successfully",
-    data: monthlyPayments,
+    data: monthlyPayments.data,
+    meta: monthlyPayments.meta,
   });
 }); 
 
