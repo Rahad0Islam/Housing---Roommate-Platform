@@ -29,7 +29,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { GoogleAuth } from "../google-auth"; // Assuming there's a GoogleAuth component, wait I should check if it exists
+import { Separator } from "@/components/ui/separator";
+import { GoogleAuth } from "../google-auth";
 
 type RegisterFormValues = z.infer<typeof userRegistrationZodSchema>;
 
@@ -45,6 +46,7 @@ export function RegisterForm() {
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   function onSubmit(data: RegisterFormValues) {
@@ -57,9 +59,22 @@ export function RegisterForm() {
         router.push(`/verify-account?email=${encodeURIComponent(data.email)}`);
       },
       onError: (error: any) => {
+        let errMessage = "Something went wrong. Please try again.";
+        if (typeof error?.data?.message === 'string') errMessage = error.data.message;
+        else if (typeof error?.response?.data?.message === 'string') errMessage = error.response.data.message;
+        else if (typeof error?.response?._data?.message === 'string') errMessage = error.response._data.message;
+        else if (typeof error?.message === 'string') errMessage = error.message;
+
+        // Map backend errors directly to the form fields
+        if (errMessage.toLowerCase().includes("email") || errMessage.toLowerCase().includes("already exist")) {
+          form.setError("email", {
+            type: "manual",
+            message: errMessage,
+          });
+        }
+
         toast.error("Registration failed", {
-          description:
-            error.message || "Something went wrong. Please try again.",
+          description: errMessage,
         });
       },
     });
@@ -77,7 +92,7 @@ export function RegisterForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <FormField
               control={form.control}
               name="name"
@@ -156,6 +171,19 @@ export function RegisterForm() {
             </Button>
           </form>
         </Form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background/60 px-2 text-muted-foreground backdrop-blur-xl">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <GoogleAuth />
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-center space-y-4">
         <div className="text-sm text-muted-foreground">

@@ -71,84 +71,84 @@ const createBuilding = async (
 
 const getAllBuildings = async (query: IbuildingSearchQuery) => {
 
-    //future add query params for filtering and pagination
+  //future add query params for filtering and pagination
 
-     const limit = query.limit ? Number(query.limit) : 10;
-           const page = query.page ? Number(query.page) : 1;
-           const skip = (page - 1) * limit;
-           const sortBy = query.sortBy ? query.sortBy : "createdAt";
-           const sortOrder = query.sortOrder ? query.sortOrder : "desc";
-       
-            const andCondition : BuildingWhereInput[] = [];
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
-            if(query.searchTerm){
-           andCondition.push({
-           OR:[
-               {
-                   name:{
-                       contains:query.searchTerm,
-                       mode:"insensitive"
-                   }
-               },
-               {
-                   description:{
-                       contains:query.searchTerm,
-                       mode:"insensitive"
-                   }
-               },{
-                    address:{
-                        contains:query.searchTerm,
-                        mode:"insensitive"
-                    }
-               },
-               {
-                     amenities:{
-                        some:{
-                            name:{
-                                contains:query.searchTerm,
-                                mode:"insensitive"
-                            }
-                        }
-                     }
-               },
-              
-               
-           ]
-       })
-       }
+  const andCondition: BuildingWhereInput[] = [];
 
-        if(query.name){
-               andCondition.push({
-                   name:query.name
-               })
-           }
-            if(query.description){
-               andCondition.push({
-                   description:query.description
-               })
-           }
-            if(query.id){
-               andCondition.push({
-                   id:query.id
-               })
-           }
+  if (query.searchTerm) {
+    andCondition.push({
+      OR: [
+        {
+          name: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        },
+        {
+          description: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        }, {
+          address: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        },
+        {
+          amenities: {
+            some: {
+              name: {
+                contains: query.searchTerm,
+                mode: "insensitive"
+              }
+            }
+          }
+        },
 
-           if(query.city){
-            andCondition.push({
-                city:query.city
-            })
-        }
 
-         if(query.numberOfFloors){
-            andCondition.push({
-                numberOfFloors:{
-                    lte:Number(query.numberOfFloors)
-                }
-            })
-        }
-          
-   
-       
+      ]
+    })
+  }
+
+  if (query.name) {
+    andCondition.push({
+      name: query.name
+    })
+  }
+  if (query.description) {
+    andCondition.push({
+      description: query.description
+    })
+  }
+  if (query.id) {
+    andCondition.push({
+      id: query.id
+    })
+  }
+
+  if (query.city) {
+    andCondition.push({
+      city: query.city
+    })
+  }
+
+  if (query.numberOfFloors) {
+    andCondition.push({
+      numberOfFloors: {
+        lte: Number(query.numberOfFloors)
+      }
+    })
+  }
+
+
+
   const buildings = await prisma.building.findMany(
     {
       where: andCondition.length > 0 ? { AND: andCondition } : {},
@@ -166,7 +166,18 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
             name: true,
           },
         },
-        
+
+        flats: {
+          include: {
+            rooms: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+
       },
       skip,
       take: limit,
@@ -175,16 +186,16 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
       },
     }
   );
-  
-   return {
-        data:buildings,
-        meta:{
-            page,
-            limit,
-            total:buildings.length,
-            totalPages:Math.ceil(buildings.length / limit)
-        }
-    };
+
+  return {
+    data: buildings,
+    meta: {
+      page,
+      limit,
+      total: buildings.length,
+      totalPages: Math.ceil(buildings.length / limit)
+    }
+  };
 };
 
 const getBuildingByOwnerId = async (ownerId: string) => {
@@ -260,8 +271,8 @@ const updateBuilding = async (
       file.buffer,
     );
 
-     if(imagePublicId) 
-     await deleteImage(imagePublicId); // Delete the old image from Cloudinary
+    if (imagePublicId)
+      await deleteImage(imagePublicId); // Delete the old image from Cloudinary
 
     imageUrl = uploadResult.imageUrl;
     imagePublicId = uploadResult.publicId;
@@ -303,10 +314,10 @@ const deleteBuilding = async (buildingId: string, userId: string) => {
 
 
 export const buildingService = {
-    createBuilding,
-    getAllBuildings,
-    getBuildingById,
-    updateBuilding,
-    deleteBuilding,
-    getBuildingByOwnerId
+  createBuilding,
+  getAllBuildings,
+  getBuildingById,
+  updateBuilding,
+  deleteBuilding,
+  getBuildingByOwnerId
 }

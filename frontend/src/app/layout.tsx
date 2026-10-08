@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/providers";
 import { Toaster } from "@/components/ui/toast";
-
+import { Toaster as SonnerToaster } from "sonner";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
@@ -40,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
 
           <Toaster />
+          <SonnerToaster position="top-right" richColors />
         </body>
       </Providers>
     </html>

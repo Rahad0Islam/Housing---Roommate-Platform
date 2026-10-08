@@ -45,6 +45,7 @@ export function LoginForm() {
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   function onSubmit(data: LoginFormValues) {
@@ -54,7 +55,8 @@ export function LoginForm() {
         router.push("/");
       },
       onError: (error: any) => {
-        if (error.message && error.message.toLowerCase().includes("verified")) {
+        const errMessage = error?.data?.message || error?.response?.data?.message || error?.response?._data?.message || error?.message || "";
+        if (errMessage.toLowerCase().includes("verified")) {
           toast.error("Email not verified", {
             description: "Please verify your email before logging in.",
           });
@@ -63,7 +65,7 @@ export function LoginForm() {
           );
         } else {
           toast.error("Login failed", {
-            description: error.message || "Invalid email or password.",
+            description: errMessage || "Invalid email or password.",
           });
         }
       },
@@ -82,7 +84,7 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <FormField
               control={form.control}
               name="email"
