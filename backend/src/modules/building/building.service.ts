@@ -72,7 +72,7 @@ const createBuilding = async (
 const getAllBuildings = async (query: IbuildingSearchQuery) => {
 
   //future add query params for filtering and pagination
-
+  console.log("ssrahad sjsjdosjojsdposdj")
   const limit = query.limit ? Number(query.limit) : 10;
   const page = query.page ? Number(query.page) : 1;
   const skip = (page - 1) * limit;
@@ -169,12 +169,7 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
 
         flats: {
           include: {
-            rooms: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
+            rooms: true
           }
         }
 
@@ -187,6 +182,7 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
     }
   );
 
+  console.log(buildings)
   return {
     data: buildings,
     meta: {
