@@ -154,7 +154,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled&id=${excutePaymentResult.merchantInvoiceNumber}` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -164,7 +164,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled&id=${excutePaymentResult.merchantInvoiceNumber}` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
         }
         else if (status === "success") {
 
@@ -194,7 +194,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
             });
 
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=success&id=${excutePaymentResult.merchantInvoiceNumber}` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/payment/success?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
 
         }  
 
@@ -351,7 +351,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled&type=monthly` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -361,7 +361,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled&type=monthly` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
         }
         else if (status === "success") {
 
@@ -383,7 +383,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                 },
             });
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=success&type=monthly` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/payment/success?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
 
         }  
 
