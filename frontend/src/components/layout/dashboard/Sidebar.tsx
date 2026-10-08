@@ -37,6 +37,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         ...baseLinks,
         { name: "My Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
         { name: "Monthly Bills", href: "/dashboard/monthly-bills", icon: ReceiptIcon },
+        { name: "Apply as Owner", href: "/dashboard/apply-owner", icon: Building2 },
         { name: "Browse Properties", href: "/buildings", icon: Building },
       ];
     }
@@ -54,6 +55,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
       return [
         ...baseLinks,
         { name: "Users", href: "/dashboard/users", icon: Users },
+        { name: "Owner Apps", href: "/dashboard/owner-applications", icon: Building2 },
         { name: "Buildings", href: "/dashboard/buildings", icon: Building2 },
         { name: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck },
       ];

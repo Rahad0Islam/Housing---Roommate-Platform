@@ -283,10 +283,14 @@ const findAllRoommateProfiles = async (
   });
 
   if (total === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No roommate profiles found",
-    );
+    return {
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: [],
+    };
   }
 
   const profiles = await prisma.roommateProfile.findMany({

@@ -212,10 +212,14 @@ const getAllbooking = async (
   });
 
   if (total === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No bookings found",
-    );
+    return {
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: [],
+    };
   }
 
   // Get paginated bookings

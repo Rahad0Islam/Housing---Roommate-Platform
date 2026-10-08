@@ -256,6 +256,9 @@ const getMe = async (user: IRequestUser) => {
 		omit: {
 			password: true,
 		},
+		include: {
+			owners: true,
+		}
 	});
 
 	if (!isUserExists) {

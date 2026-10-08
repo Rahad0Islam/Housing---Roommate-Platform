@@ -210,7 +210,7 @@ const getBuildingByOwnerId = async (ownerId: string) => {
   });
 
   if (!buildings || buildings.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No buildings found for this owner");
+    return [];
   }
 
   return buildings;
