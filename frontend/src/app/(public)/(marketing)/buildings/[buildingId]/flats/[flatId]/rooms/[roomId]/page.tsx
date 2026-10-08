@@ -17,6 +17,14 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
 
 export default function RoomDetailsPage({
   params,
@@ -39,8 +47,23 @@ export default function RoomDetailsPage({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [rentType, setRentType] = useState("SHORT_TERM");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleBooking = () => {
+  const calculateDays = (start: string, end: string) => {
+    if (!start || !end) return 0;
+    const diffTime = Math.abs(new Date(end).getTime() - new Date(start).getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+  };
+
+  const calculateTotal = () => {
+    if (rentType === "LONG_TERM") {
+      return Number(room?.monthlyRent || 0);
+    }
+    const days = calculateDays(startDate, endDate);
+    return Number(room?.dailyRent || 0) * days;
+  };
+
+  const onPreBook = () => {
     if (!user) {
       toast.error("Please login first to book a room");
       router.push(`/login?redirect=/buildings/${buildingId}/flats/${flatId}/rooms/${roomId}`);
@@ -51,6 +74,27 @@ export default function RoomDetailsPage({
       toast.error("Please select start and end dates");
       return;
     }
+
+    if (new Date(startDate) >= new Date(endDate)) {
+      toast.error("Start date must be before end date");
+      return;
+    }
+
+    const days = calculateDays(startDate, endDate);
+    if(rentType === "SHORT_TERM" && days > 30){
+      toast.error("Short term booking cannot exceed 30 days");
+      return;
+    }
+  
+    if(rentType === "LONG_TERM" && days < 90){
+      toast.error("Long term booking must be at least 90 days");
+      return;
+    }
+
+    setIsDialogOpen(true);
+  };
+
+  const handleBooking = () => {
 
     createBooking(
       {
@@ -304,11 +348,10 @@ export default function RoomDetailsPage({
                     </div>
                     
                     <Button 
-                      onClick={handleBooking}
-                      disabled={isBooking || isPaying}
+                      onClick={onPreBook}
                       className="w-full h-12 text-lg font-bold shadow-lg bg-[#e2136e] hover:bg-[#b50f58] text-white transition-all mt-4"
                     >
-                      {(isBooking || isPaying) ? "Processing..." : "Pay with bKash"}
+                      Book this Room
                     </Button>
                     <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
                       You will be securely redirected to bKash to complete your payment.
@@ -320,6 +363,52 @@ export default function RoomDetailsPage({
           </div>
         </div>
       </div>
+
+      {/* Booking Confirmation Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Booking & Payment</DialogTitle>
+            <DialogDescription>
+              Please review your booking details before proceeding to payment.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="text-gray-500 dark:text-gray-400">Rent Type</div>
+              <div className="font-semibold text-right">{rentType === "LONG_TERM" ? "Long Term" : "Short Term"}</div>
+              
+              <div className="text-gray-500 dark:text-gray-400">Start Date</div>
+              <div className="font-semibold text-right">{startDate ? new Date(startDate).toLocaleDateString() : ""}</div>
+              
+              <div className="text-gray-500 dark:text-gray-400">End Date</div>
+              <div className="font-semibold text-right">{endDate ? new Date(endDate).toLocaleDateString() : ""}</div>
+              
+              <div className="text-gray-500 dark:text-gray-400">Duration</div>
+              <div className="font-semibold text-right">{calculateDays(startDate, endDate)} Days</div>
+            </div>
+            
+            <div className="border-t pt-4">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Total Amount</span>
+                <span className="text-[#e2136e]">৳{calculateTotal().toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isBooking || isPaying}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleBooking} 
+              disabled={isBooking || isPaying}
+              className="bg-[#e2136e] hover:bg-[#b50f58] text-white font-bold"
+            >
+              {(isBooking || isPaying) ? "Processing..." : "Pay with bKash"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
