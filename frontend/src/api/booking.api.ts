@@ -23,3 +23,10 @@ export const completeBooking = async (id: string): Promise<IApiResponse<any>> =>
 export const onGoingBooking = async (id: string): Promise<IApiResponse<any>> => {
   return await apiClient<IApiResponse<any>>(`/bookings/ongoing/${id}`, { method: "PATCH" });
 };
+
+export const createBooking = async (payload: { roomId: string; rentType: string; startDate: string; endDate: string }): Promise<IApiResponse<any>> => {
+  return await apiClient<IApiResponse<any>>("/bookings", {
+    method: "POST",
+    body: payload,
+  });
+};

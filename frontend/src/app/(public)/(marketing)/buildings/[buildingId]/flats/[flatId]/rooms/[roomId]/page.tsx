@@ -9,6 +9,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ArrowLeftIcon, DoorClosedIcon, CheckCircle2Icon, CalendarIcon, UsersIcon, BedSingleIcon, HomeIcon, WalletIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useGetMe } from "@/hooks/auth.hook";
+import { useCreateBooking } from "@/hooks/booking.hook";
+import { useCreateBkashPayment } from "@/hooks/bkashPayment.hook";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function RoomDetailsPage({
   params,
@@ -23,6 +31,61 @@ export default function RoomDetailsPage({
   
   const flat = building?.flats?.find(f => f.id === flatId);
   const room = flat?.rooms?.find(r => r.id === roomId);
+
+  const { data: user } = useGetMe();
+  const { mutate: createBooking, isPending: isBooking } = useCreateBooking();
+  const { mutate: createBkashPayment, isPending: isPaying } = useCreateBkashPayment();
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [rentType, setRentType] = useState("SHORT_TERM");
+
+  const handleBooking = () => {
+    if (!user) {
+      toast.error("Please login first to book a room");
+      router.push(`/login?redirect=/buildings/${buildingId}/flats/${flatId}/rooms/${roomId}`);
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      toast.error("Please select start and end dates");
+      return;
+    }
+
+    createBooking(
+      {
+        roomId,
+        rentType,
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+      },
+      {
+        onSuccess: (res) => {
+          const bookingId = res.data.id;
+          // Successfully created booking, now initiate bKash payment
+          createBkashPayment(
+            { bookingId, paymentType: "BOOKING" },
+            {
+              onSuccess: (paymentRes) => {
+                if (paymentRes.data?.paymentUrl) {
+                  window.location.href = paymentRes.data.paymentUrl;
+                } else {
+                  toast.error("Invalid payment URL received");
+                }
+              },
+              onError: (error: any) => {
+                toast.error(error.message || "Failed to initiate payment");
+              }
+            }
+          );
+        },
+        onError: (error: any) => {
+          const errorMessage = error?.response?.data?.message || error?.data?.message || error?.message || "Booking failed";
+          toast.error(errorMessage);
+        }
+      }
+    );
+  };
 
   if (isLoading) {
     return (
@@ -216,12 +279,39 @@ export default function RoomDetailsPage({
                 </div>
 
                 {room.status === "AVAILABLE" && (
-                  <div className="mt-4">
-                    <Button className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-primary/25 transition-all">
-                      Book this Room
+                  <div className="mt-4 space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <div className="space-y-2">
+                      <Label>Rent Type</Label>
+                      <Select value={rentType} onValueChange={setRentType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select rent type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="SHORT_TERM">Short Term</SelectItem>
+                          <SelectItem value="LONG_TERM">Long Term</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Start Date</Label>
+                        <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} min={new Date().toISOString().split('T')[0]} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>End Date</Label>
+                        <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate || new Date().toISOString().split('T')[0]} />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleBooking}
+                      disabled={isBooking || isPaying}
+                      className="w-full h-12 text-lg font-bold shadow-lg bg-[#e2136e] hover:bg-[#b50f58] text-white transition-all mt-4"
+                    >
+                      {(isBooking || isPaying) ? "Processing..." : "Pay with bKash"}
                     </Button>
-                    <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">
-                      You will be redirected to contact the owner or complete the booking process.
+                    <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      You will be securely redirected to bKash to complete your payment.
                     </p>
                   </div>
                 )}

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getBookings, cancelBooking, completeBooking, onGoingBooking } from "@/api/booking.api";
+import { getBookings, cancelBooking, completeBooking, onGoingBooking, createBooking } from "@/api/booking.api";
 
 export const useBookings = (query?: any) => {
   return useQuery({
@@ -37,6 +37,16 @@ export const useOnGoingBooking = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
+    },
+  });
+};
+
+export const useCreateBooking = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
     },
   });
 };
