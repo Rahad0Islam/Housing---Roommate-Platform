@@ -10,24 +10,29 @@ export const metadata: Metadata = {
 
 const AboutUsPage = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <section className="bg-muted/30 py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+    <div className="gradient-mesh flex min-h-screen flex-col">
+      <section className="px-4 py-24">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+            Our purpose
+          </p>
+          <h1 className="mb-6 font-heading text-4xl font-bold tracking-tight md:text-6xl">
             About RoommateFinder
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-xl leading-8 text-muted-foreground">
             We're on a mission to make finding the perfect home and the right
             roommates as seamless and stress-free as possible.
           </p>
         </div>
       </section>
 
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
+      <section className="px-4 py-20">
+        <div className="mx-auto max-w-5xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+              <h2 className="mb-6 font-heading text-3xl font-bold">
+                Our Story
+              </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
                   Finding a place to live is hard enough, but finding the right
@@ -48,8 +53,10 @@ const AboutUsPage = () => {
                 </p>
               </div>
             </div>
-            <div className="bg-primary/5 rounded-3xl p-8 border">
-              <h3 className="text-2xl font-semibold mb-6">What We Offer</h3>
+            <div className="surface bg-primary/[0.06] p-8">
+              <h3 className="mb-6 font-heading text-2xl font-semibold">
+                What We Offer
+              </h3>
               <ul className="space-y-4">
                 {[
                   "Verified user profiles and secure authentication",

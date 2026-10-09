@@ -129,7 +129,11 @@
   }
 
   body {
-    background-image: radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 4%, transparent) 1px, transparent 0);
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in oklch, var(--foreground) 4%, transparent) 1px,
+      transparent 0
+    );
     background-size: 28px 28px;
   }
 
@@ -149,5 +153,57 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .gradient-mesh {
+    background-image:
+      radial-gradient(
+        circle at 10% 10%,
+        color-mix(in oklch, var(--primary) 12%, transparent),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 90% 0%,
+        color-mix(in oklch, var(--accent) 16%, transparent),
+        transparent 28%
+      );
+  }
+
+  .motion-rise {
+    animation: motion-rise 500ms ease-out both;
+  }
+
+  .motion-delay-1 {
+    animation-delay: 70ms;
+  }
+
+  .motion-delay-2 {
+    animation-delay: 140ms;
+  }
+
+  .motion-delay-3 {
+    animation-delay: 210ms;
+  }
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

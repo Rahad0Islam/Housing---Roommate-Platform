@@ -39,7 +39,9 @@ export function Header() {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:-rotate-3">
               <Home className="h-5 w-5" />
             </span>
-            <span className="font-heading text-lg font-bold tracking-tight">Roommate<span className="text-primary">Finder</span></span>
+            <span className="font-heading text-lg font-bold tracking-tight">
+              Roommate<span className="text-primary">Finder</span>
+            </span>
           </Link>
           <nav className="hidden items-center gap-7 md:flex">
             {navigation.map((item) => (
@@ -47,7 +49,9 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={`relative py-2 text-sm font-medium transition-colors hover:text-foreground ${
-                  isActive(item.href) ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground"
+                  isActive(item.href)
+                    ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary"
+                    : "text-muted-foreground"
                 }`}
               >
                 {item.name}
@@ -63,11 +67,11 @@ export function Header() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger className="relative h-8 w-8 rounded-full flex items-center justify-center bg-transparent border-0 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none cursor-pointer">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>
-                          {user.data?.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {user.data?.name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end">
                     <div className="flex items-center justify-start gap-2 p-2">
@@ -79,9 +83,12 @@ export function Header() {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer" onClick={() => window.location.href = "/dashboard"}>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Dashboard</span>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => (window.location.href = "/dashboard")}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="cursor-pointer text-red-600 focus:text-red-600"
@@ -104,7 +111,9 @@ export function Header() {
                     </Button>
                   </Link>
                   <Link href="/register">
-                    <Button className="rounded-full px-5 text-sm font-medium shadow-lg shadow-primary/20">Get Started</Button>
+                    <Button className="rounded-full px-5 text-sm font-medium shadow-lg shadow-primary/20">
+                      Get Started
+                    </Button>
                   </Link>
                 </>
               )}
@@ -114,8 +123,8 @@ export function Header() {
           {/* Mobile Nav */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger className="md:hidden flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted bg-transparent border-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none cursor-pointer">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
             </SheetTrigger>
             <SheetContent side="right" className="flex flex-col">
               <nav className="flex flex-col gap-4 mt-8">

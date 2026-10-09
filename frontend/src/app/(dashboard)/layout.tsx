@@ -36,13 +36,11 @@ export default function DashboardLayout({
       <div className="hidden md:block md:w-64 md:flex-shrink-0 fixed inset-y-0 z-50">
         <Sidebar className="w-full h-full" />
       </div>
-      
+
       {/* Main Content Area */}
       <div className="flex-1 md:pl-64 flex flex-col min-h-screen">
         <DashboardHeader />
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">
-          {children}
-        </main>
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   );

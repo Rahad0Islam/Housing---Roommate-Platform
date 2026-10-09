@@ -29,8 +29,12 @@ export function TenantDashboard() {
   if (isError || !analytics?.data) {
     return (
       <div className="p-8 text-center bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900">
-        <h3 className="text-lg font-semibold text-red-800 dark:text-red-400">Unable to load dashboard data</h3>
-        <p className="text-red-600 dark:text-red-500 mt-2">Something went wrong. Please try again later.</p>
+        <h3 className="text-lg font-semibold text-red-800 dark:text-red-400">
+          Unable to load dashboard data
+        </h3>
+        <p className="text-red-600 dark:text-red-500 mt-2">
+          Something went wrong. Please try again later.
+        </p>
       </div>
     );
   }
@@ -38,11 +42,18 @@ export function TenantDashboard() {
   const stats = analytics.data;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="gradient-mesh motion-rise space-y-8">
+      <div className="rounded-3xl border border-primary/15 bg-primary/[0.06] p-6 md:flex md:items-center md:justify-between md:p-8">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Tenant Dashboard</h2>
-          <p className="text-muted-foreground">Manage your bookings and payments.</p>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Your home base
+          </p>
+          <h2 className="font-heading text-3xl font-bold tracking-tight">
+            Tenant Dashboard
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Manage your bookings and payments.
+          </p>
         </div>
         <div className="flex gap-2">
           <Button>
@@ -54,32 +65,48 @@ export function TenantDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="motion-rise motion-delay-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-            <CalendarCheck className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Bookings
+            </CardTitle>
+            <span className="rounded-xl bg-primary/10 p-2 text-primary">
+              <CalendarCheck className="h-4 w-4" />
+            </span>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.bookings}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="motion-rise motion-delay-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Payments</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Payments
+            </CardTitle>
+            <span className="rounded-xl bg-emerald-500/10 p-2 text-emerald-500">
+              <Wallet className="h-4 w-4" />
+            </span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.payments?.successfulAmount?.toLocaleString() || 0}</div>
-            <p className="text-xs text-muted-foreground">From {stats.payments?.successfulCount || 0} transactions</p>
+            <div className="text-2xl font-bold">
+              ${stats.payments?.successfulAmount?.toLocaleString() || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              From {stats.payments?.successfulCount || 0} transactions
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="motion-rise motion-delay-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Rent Records</CardTitle>
-            <CalendarCheck className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Monthly Rent Records
+            </CardTitle>
+            <span className="rounded-xl bg-indigo-500/10 p-2 text-indigo-500">
+              <CalendarCheck className="h-4 w-4" />
+            </span>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.monthlyPayments}</div>
@@ -90,8 +117,13 @@ export function TenantDashboard() {
       {stats.bookings === 0 && (
         <div className="mt-8 p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center">
           <Search className="h-12 w-12 text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No bookings yet</h3>
-          <p className="text-gray-500 max-w-sm mt-1 mb-4">You haven&apos;t booked any rooms yet. Browse our properties to find your next home.</p>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            No bookings yet
+          </h3>
+          <p className="text-gray-500 max-w-sm mt-1 mb-4">
+            You haven&apos;t booked any rooms yet. Browse our properties to find
+            your next home.
+          </p>
           <Button>
             <Link href="/buildings">Browse Properties</Link>
           </Button>

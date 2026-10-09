@@ -29,7 +29,11 @@ export function DashboardHeader() {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="icon" className="rounded-xl md:hidden" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-xl md:hidden"
+              />
             }
           >
             <Menu className="h-5 w-5" />
@@ -55,17 +59,26 @@ export function DashboardHeader() {
                 </AvatarFallback>
               </Avatar>
               <div className="hidden md:flex flex-col items-start text-sm mr-2">
-                <span className="mb-1 font-medium leading-none">{user.data?.name}</span>
-                <span className="text-xs capitalize text-muted-foreground">{user.data?.role.toLowerCase()}</span>
+                <span className="mb-1 font-medium leading-none">
+                  {user.data?.name}
+                </span>
+                <span className="text-xs capitalize text-muted-foreground">
+                  {user.data?.role.toLowerCase()}
+                </span>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <div className="flex flex-col space-y-1 p-2">
                 <p className="font-medium">{user.data?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user.data?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.data?.email}
+                </p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/dashboard/profile")}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => router.push("/dashboard/profile")}
+              >
                 <UserCircle className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>

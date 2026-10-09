@@ -1,24 +1,40 @@
 "use client";
 
 import React, { useState } from "react";
-import { useUtilityBills, useCreateUtilityBill, useCreateMonthlyBill } from "@/hooks/utility.hook";
+import {
+  useUtilityBills,
+  useCreateUtilityBill,
+  useCreateMonthlyBill,
+} from "@/hooks/utility.hook";
 import { useOwnerBuildings } from "@/hooks/building.hook";
 import { useFlatsByBuildingId } from "@/hooks/flat.hook";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { PlusIcon, ReceiptIcon } from "lucide-react";
 
@@ -29,21 +45,27 @@ export default function UtilityBillsPage() {
   const { data: buildingsRes } = useOwnerBuildings();
   const buildings = buildingsRes?.data || [];
 
-  const { mutateAsync: createUtilityBill, isPending: isCreatingUtility } = useCreateUtilityBill();
-  const { mutateAsync: createMonthlyBill, isPending: isCreatingMonthly } = useCreateMonthlyBill();
+  const { mutateAsync: createUtilityBill, isPending: isCreatingUtility } =
+    useCreateUtilityBill();
+  const { mutateAsync: createMonthlyBill, isPending: isCreatingMonthly } =
+    useCreateMonthlyBill();
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>("");
   const [formData, setFormData] = useState({
     flatId: "",
-    billingMonth: new Date().toISOString().split('T')[0],
+    billingMonth: new Date().toISOString().split("T")[0],
     currentBill: "",
     gasBill: "",
-    othersBill: ""
+    othersBill: "",
   });
 
-  const { data: flatsRes, isLoading: isLoadingFlats } = useFlatsByBuildingId(selectedBuildingId);
-  const flats = (Array.isArray(flatsRes?.data) ? flatsRes?.data : (flatsRes?.data as any)?.flats) || [];
+  const { data: flatsRes, isLoading: isLoadingFlats } =
+    useFlatsByBuildingId(selectedBuildingId);
+  const flats =
+    (Array.isArray(flatsRes?.data)
+      ? flatsRes?.data
+      : (flatsRes?.data as any)?.flats) || [];
 
   const handleCreateBill = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,10 +95,10 @@ export default function UtilityBillsPage() {
       setSelectedBuildingId("");
       setFormData({
         flatId: "",
-        billingMonth: new Date().toISOString().split('T')[0],
+        billingMonth: new Date().toISOString().split("T")[0],
         currentBill: "",
         gasBill: "",
-        othersBill: ""
+        othersBill: "",
       });
     } catch (error) {
       console.error("Failed to create bills", error);
@@ -86,18 +108,23 @@ export default function UtilityBillsPage() {
   const isCreating = isCreatingUtility || isCreatingMonthly;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-6 rounded-xl border">
+    <div className="gradient-mesh motion-rise space-y-8">
+      <div className="flex flex-col justify-between gap-4 rounded-3xl border border-primary/15 bg-primary/[0.06] p-6 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Utility & Monthly Bills</h2>
-          <p className="text-muted-foreground">Manage and generate utility bills for flats.</p>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Owner operations
+          </p>
+          <h2 className="font-heading text-3xl font-bold tracking-tight">
+            Utility & Monthly Bills
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Manage and generate utility bills for flats.
+          </p>
         </div>
-        
+
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger
-            render={
-              <Button className="bg-[#e2136e] hover:bg-[#b50f58] text-white" />
-            }
+            render={<Button className="shadow-lg shadow-primary/20" />}
           >
             <PlusIcon className="w-4 h-4 mr-2" /> Generate Bill
           </DialogTrigger>
@@ -106,14 +133,13 @@ export default function UtilityBillsPage() {
               <DialogTitle>Generate Utility & Monthly Bill</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateBill} className="space-y-4 pt-4">
-              
               <div className="space-y-2">
                 <Label htmlFor="buildingId">Select Building</Label>
-                <Select 
-                  value={selectedBuildingId} 
+                <Select
+                  value={selectedBuildingId}
                   onValueChange={(val) => {
                     setSelectedBuildingId(val as string);
-                    setFormData({...formData, flatId: ""}); // Reset flat when building changes
+                    setFormData({ ...formData, flatId: "" }); // Reset flat when building changes
                   }}
                 >
                   <SelectTrigger>
@@ -131,13 +157,19 @@ export default function UtilityBillsPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="flatId">Select Flat</Label>
-                <Select 
-                  value={formData.flatId} 
-                  onValueChange={(val) => setFormData({...formData, flatId: val as string})}
+                <Select
+                  value={formData.flatId}
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, flatId: val as string })
+                  }
                   disabled={!selectedBuildingId || isLoadingFlats}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={isLoadingFlats ? "Loading flats..." : "Select a flat"} />
+                    <SelectValue
+                      placeholder={
+                        isLoadingFlats ? "Loading flats..." : "Select a flat"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {flats.map((flat: any) => (
@@ -151,58 +183,77 @@ export default function UtilityBillsPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="billingMonth">Billing Month</Label>
-                <Input 
-                  id="billingMonth" 
+                <Input
+                  id="billingMonth"
                   type="date"
-                  value={formData.billingMonth} 
-                  onChange={e => setFormData({...formData, billingMonth: e.target.value})} 
-                  required 
+                  value={formData.billingMonth}
+                  onChange={(e) =>
+                    setFormData({ ...formData, billingMonth: e.target.value })
+                  }
+                  required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="currentBill">Electricity Bill (৳)</Label>
-                  <Input 
-                    id="currentBill" 
+                  <Input
+                    id="currentBill"
                     type="number"
-                    value={formData.currentBill} 
-                    onChange={e => setFormData({...formData, currentBill: e.target.value})} 
-                    required 
+                    value={formData.currentBill}
+                    onChange={(e) =>
+                      setFormData({ ...formData, currentBill: e.target.value })
+                    }
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gasBill">Gas Bill (৳)</Label>
-                  <Input 
-                    id="gasBill" 
+                  <Input
+                    id="gasBill"
                     type="number"
-                    value={formData.gasBill} 
-                    onChange={e => setFormData({...formData, gasBill: e.target.value})} 
-                    required 
+                    value={formData.gasBill}
+                    onChange={(e) =>
+                      setFormData({ ...formData, gasBill: e.target.value })
+                    }
+                    required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="othersBill">Other Bills (Water, Trash, etc) (৳)</Label>
-                <Input 
-                  id="othersBill" 
+                <Label htmlFor="othersBill">
+                  Other Bills (Water, Trash, etc) (৳)
+                </Label>
+                <Input
+                  id="othersBill"
                   type="number"
-                  value={formData.othersBill} 
-                  onChange={e => setFormData({...formData, othersBill: e.target.value})} 
-                  required 
+                  value={formData.othersBill}
+                  onChange={(e) =>
+                    setFormData({ ...formData, othersBill: e.target.value })
+                  }
+                  required
                 />
               </div>
-              
+
               <div className="pt-2">
-                <div className="bg-primary/10 p-3 rounded-lg text-sm text-primary mb-4 flex justify-between items-center">
+                <div className="mb-4 flex items-center justify-between rounded-xl bg-primary/10 p-3 text-sm text-primary">
                   <span>Total Utility:</span>
                   <span className="font-bold text-lg">
-                    ৳{(Number(formData.currentBill) || 0) + (Number(formData.gasBill) || 0) + (Number(formData.othersBill) || 0)}
+                    ৳
+                    {(Number(formData.currentBill) || 0) +
+                      (Number(formData.gasBill) || 0) +
+                      (Number(formData.othersBill) || 0)}
                   </span>
                 </div>
-                <Button type="submit" disabled={isCreating || !formData.flatId} className="w-full bg-[#e2136e] hover:bg-[#b50f58]">
-                  {isCreating ? "Generating Bills..." : "Generate & Link Monthly Bill"}
+                <Button
+                  type="submit"
+                  disabled={isCreating || !formData.flatId}
+                  className="w-full shadow-lg shadow-primary/20"
+                >
+                  {isCreating
+                    ? "Generating Bills..."
+                    : "Generate & Link Monthly Bill"}
                 </Button>
               </div>
             </form>
@@ -214,13 +265,17 @@ export default function UtilityBillsPage() {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-8 space-y-4">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
             </div>
           ) : bills.length === 0 ? (
             <div className="p-12 text-center flex flex-col items-center justify-center">
               <ReceiptIcon className="w-12 h-12 text-muted-foreground opacity-30 mb-4" />
               <h3 className="text-lg font-semibold">No bills generated</h3>
-              <p className="text-muted-foreground">You haven't generated any utility bills yet.</p>
+              <p className="text-muted-foreground">
+                You haven't generated any utility bills yet.
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -237,11 +292,16 @@ export default function UtilityBillsPage() {
                 </TableHeader>
                 <TableBody>
                   {bills.map((bill: any) => {
-                    const total = Number(bill.currentBill) + Number(bill.gasBill) + Number(bill.othersBill);
+                    const total =
+                      Number(bill.currentBill) +
+                      Number(bill.gasBill) +
+                      Number(bill.othersBill);
                     return (
                       <TableRow key={bill.id}>
                         <TableCell>
-                          <div className="font-medium">Flat {bill.flat?.flatNumber || bill.flatId}</div>
+                          <div className="font-medium">
+                            Flat {bill.flat?.flatNumber || bill.flatId}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="font-medium">

@@ -11,7 +11,9 @@ export function Footer() {
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <Home className="h-5 w-5" />
               </span>
-              <span className="font-heading text-lg font-bold tracking-tight">Roommate<span className="text-primary">Finder</span></span>
+              <span className="font-heading text-lg font-bold tracking-tight">
+                Roommate<span className="text-primary">Finder</span>
+              </span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Connecting people with perfect rooms and compatible roommates to
