@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { FeaturedBuildings } from "@/components/home/FeaturedBuildings";
 
 export default function Home() {
   return (
@@ -121,6 +122,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <FeaturedBuildings />
 
       {/* CTA Section */}
       <section className="px-4 py-24">
