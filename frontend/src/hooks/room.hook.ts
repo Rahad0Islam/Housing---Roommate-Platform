@@ -24,6 +24,7 @@ export const useCreateRoom = () => {
     mutationFn: createRoom,
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["rooms", variables.flatId] });
+      queryClient.invalidateQueries({ queryKey: ["flats"] });
       toast.success("Room created successfully");
     },
     onError: (error: any) => {
@@ -38,6 +39,7 @@ export const useUpdateRoom = () => {
     mutationFn: updateRoom,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["flats"] });
       queryClient.invalidateQueries({ queryKey: ["room", data.data.id] });
       toast.success("Room updated successfully");
     },
@@ -53,6 +55,7 @@ export const useDeleteRoom = () => {
     mutationFn: deleteRoom,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["flats"] });
       toast.success("Room deleted successfully");
     },
     onError: (error: any) => {

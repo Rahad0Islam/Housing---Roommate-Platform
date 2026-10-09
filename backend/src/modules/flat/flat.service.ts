@@ -73,7 +73,11 @@ const getFlatByBuildingId = async (buildingId: string) => {
   const flat = await prisma.building.findUnique({
     where: { id:buildingId },
     include: {
-      flats: true,
+      flats: {
+        include: {
+          rooms: true,
+        },
+      },
      },
   });
 
