@@ -34,11 +34,9 @@ export function GoogleAuth() {
         onError={() => {
           toast.error("Google authentication failed");
         }}
-        useOneTap
         shape="rectangular"
         size="large"
         theme="outline"
-        width="100%"
       />
     </div>
   );

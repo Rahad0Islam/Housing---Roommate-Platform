@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/form/login-form";
 import { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Login | Housing & Roommate Platform",
@@ -10,7 +11,15 @@ export default function LoginPage() {
   return (
     <div className="container relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
-        <div className="absolute inset-0 bg-primary" />
+        <Image
+          src="/login.png"
+          alt="Login"
+          fill
+          sizes="50vw"
+          className="absolute inset-0 object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-20 flex items-center text-lg font-medium">
           <svg
             xmlns="http://www.w3.org/2000/svg"
