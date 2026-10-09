@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import {
   useOwnerBuildings,
   useCreateBuilding,
+  useUpdateBuilding,
   useDeleteBuilding,
 } from "@/hooks/building.hook";
+import { useCreateAmenity, useDeleteAmenity } from "@/hooks/amenity.hook";
 import {
   Card,
   CardContent,
@@ -30,6 +32,8 @@ import {
   EditIcon,
   HomeIcon,
   MapPinIcon,
+  PlusIcon as PlusSmallIcon,
+  XIcon,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
@@ -39,8 +43,13 @@ export default function OwnerBuildingsPage() {
   const { data: response, isLoading } = useOwnerBuildings();
   const buildings = response?.data || [];
 
-  const { mutate: createBuilding, isPending: isCreating } = useCreateBuilding();
+  const { mutateAsync: createBuilding, isPending: isCreating } =
+    useCreateBuilding();
+  const { mutateAsync: updateBuilding, isPending: isUpdating } =
+    useUpdateBuilding();
   const { mutate: deleteBuilding, isPending: isDeleting } = useDeleteBuilding();
+  const { mutateAsync: createAmenity } = useCreateAmenity();
+  const { mutate: deleteAmenity } = useDeleteAmenity();
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,6 +59,17 @@ export default function OwnerBuildingsPage() {
     numberOfFloors: "",
     city: "",
     buildingImage: null as File | null,
+    amenities: "",
+  });
+  const [editingBuilding, setEditingBuilding] = useState<any | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    address: "",
+    description: "",
+    numberOfFloors: "",
+    city: "",
+    buildingImage: null as File | null,
+    amenities: "",
   });
 
   const handleAddBuilding = (e: React.FormEvent) => {
@@ -64,19 +84,65 @@ export default function OwnerBuildingsPage() {
       data.append("buildingImage", formData.buildingImage);
     }
 
-    createBuilding(data, {
-      onSuccess: () => {
-        setIsAddOpen(false);
-        setFormData({
-          name: "",
-          address: "",
-          description: "",
-          numberOfFloors: "",
-          city: "",
-          buildingImage: null,
-        });
-      },
+    createBuilding(data).then(async (response) => {
+      const names = formData.amenities
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+      await Promise.all(
+        names.map((name) =>
+          createAmenity({ buildingId: response.data.id, name }),
+        ),
+      );
+      setIsAddOpen(false);
+      setFormData({
+        name: "",
+        address: "",
+        description: "",
+        numberOfFloors: "",
+        city: "",
+        buildingImage: null,
+        amenities: "",
+      });
     });
+  };
+
+  const openEdit = (building: any) => {
+    setEditingBuilding(building);
+    setEditFormData({
+      name: building.name || "",
+      address: building.address || "",
+      description: building.description || "",
+      numberOfFloors: String(building.numberOfFloors || ""),
+      city: building.city || "",
+      buildingImage: null,
+      amenities: "",
+    });
+  };
+
+  const handleUpdateBuilding = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBuilding) return;
+    const data = new FormData();
+    data.append("name", editFormData.name);
+    data.append("address", editFormData.address);
+    data.append("description", editFormData.description);
+    data.append("numberOfFloors", editFormData.numberOfFloors);
+    data.append("city", editFormData.city);
+    if (editFormData.buildingImage) {
+      data.append("buildingImage", editFormData.buildingImage);
+    }
+    await updateBuilding({ id: editingBuilding.id, data });
+    const names = editFormData.amenities
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+    await Promise.all(
+      names.map((name) =>
+        createAmenity({ buildingId: editingBuilding.id, name }),
+      ),
+    );
+    setEditingBuilding(null);
   };
 
   return (
@@ -145,7 +211,8 @@ export default function OwnerBuildingsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Input
+                <textarea
+                  className="min-h-24 w-full rounded-xl border border-input bg-background/70 px-3.5 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30"
                   id="description"
                   value={formData.description}
                   onChange={(e) =>
@@ -154,6 +221,20 @@ export default function OwnerBuildingsPage() {
                   placeholder="e.g. A beautiful hostel with modern amenities"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="amenities">Amenities & Features</Label>
+                <Input
+                  id="amenities"
+                  value={formData.amenities}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amenities: e.target.value })
+                  }
+                  placeholder="Wi-Fi, Parking, Security (comma separated)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Add multiple features separated by commas.
+                </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -190,7 +271,7 @@ export default function OwnerBuildingsPage() {
               <Button
                 type="submit"
                 disabled={isCreating}
-                className="w-full bg-[#e2136e] hover:bg-[#b50f58]"
+                className="w-full shadow-lg shadow-primary/20"
               >
                 {isCreating ? "Creating..." : "Create Building"}
               </Button>
@@ -198,6 +279,90 @@ export default function OwnerBuildingsPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <Dialog
+        open={!!editingBuilding}
+        onOpenChange={(open) => !open && setEditingBuilding(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Building Information</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateBuilding} className="space-y-4 pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {(
+                [
+                  ["name", "Building Name"],
+                  ["city", "City"],
+                  ["address", "Full Address"],
+                  ["numberOfFloors", "Number of Floors"],
+                ] as const
+              ).map(([key, label]) => (
+                <div key={key} className="space-y-2">
+                  <Label htmlFor={`edit-${key}`}>{label}</Label>
+                  <Input
+                    id={`edit-${key}`}
+                    type={key === "numberOfFloors" ? "number" : "text"}
+                    value={editFormData[key]}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        [key]: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <textarea
+                id="edit-description"
+                className="min-h-24 w-full rounded-xl border border-input bg-background/70 px-3.5 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30"
+                value={editFormData.description}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    description: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-image">Replace Building Image</Label>
+              <Input
+                id="edit-image"
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    buildingImage: e.target.files?.[0] || null,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-amenities">Add Amenities & Features</Label>
+              <Input
+                id="edit-amenities"
+                value={editFormData.amenities}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    amenities: e.target.value,
+                  })
+                }
+                placeholder="Gym, Elevator, Laundry (comma separated)"
+              />
+            </div>
+            <Button type="submit" disabled={isUpdating} className="w-full">
+              {isUpdating ? "Saving changes..." : "Save Building Changes"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {isLoading ? (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -255,6 +420,47 @@ export default function OwnerBuildingsPage() {
                   <MapPinIcon className="w-4 h-4 mr-1 shrink-0" />
                   <span className="truncate">{building.address}</span>
                 </div>
+                <div className="mt-4 border-t border-border/70 pt-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-sm font-semibold">
+                      Amenities & Features
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-primary"
+                      onClick={() => openEdit(building)}
+                    >
+                      <PlusSmallIcon className="mr-1 h-3.5 w-3.5" /> Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(building.amenities || [])
+                      .slice(0, 4)
+                      .map((amenity: any) => (
+                        <span
+                          key={amenity.id}
+                          className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
+                        >
+                          {amenity.name}
+                          <button
+                            type="button"
+                            aria-label={`Remove ${amenity.name}`}
+                            className="rounded-full hover:bg-primary/20"
+                            onClick={() => deleteAmenity(amenity.id)}
+                          >
+                            <XIcon className="h-3 w-3" />
+                          </button>
+                        </span>
+                      ))}
+                    {(!building.amenities ||
+                      building.amenities.length === 0) && (
+                      <p className="text-xs text-muted-foreground">
+                        No amenities added yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
 
                 <div className="flex justify-between items-center pt-4 border-t">
                   <div className="flex space-x-4">
@@ -266,6 +472,15 @@ export default function OwnerBuildingsPage() {
                     </div>
                   </div>
                   <div className="flex space-x-2">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-primary hover:bg-primary/10"
+                      onClick={() => openEdit(building)}
+                      aria-label={`Edit ${building.name}`}
+                    >
+                      <EditIcon className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="icon"
                       variant="ghost"

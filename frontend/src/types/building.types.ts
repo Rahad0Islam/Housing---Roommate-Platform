@@ -6,7 +6,9 @@ export interface IOwner {
 
 export interface IAmenity {
   id: string;
+  buildingId?: string;
   name: string;
+  description?: string | null;
 }
 
 export interface IRoom {
@@ -14,7 +16,7 @@ export interface IRoom {
   flatId: string;
   name: string;
   roomType: string;
-  monthlyRent: string; 
+  monthlyRent: string;
   dailyRent: string;
   maxOccupants: number;
   availableBed: number;
@@ -35,7 +37,7 @@ export interface IFlat {
   bedrooms: number;
   bathrooms: number;
   balcony: number;
-  totalArea: string; 
+  totalArea: string;
   status: string;
   createdAt: string;
   updatedAt: string;
