@@ -4,6 +4,7 @@ import React, { useState, use } from "react";
 import {
   useRoomsByFlatId,
   useCreateRoom,
+  useUpdateRoom,
   useDeleteRoom,
 } from "@/hooks/room.hook";
 import { useBuildingDetails } from "@/hooks/building.hook";
@@ -29,6 +30,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import {
   PlusIcon,
+  EditIcon,
   TrashIcon,
   ArrowLeftIcon,
   BedIcon,
@@ -56,9 +58,11 @@ export default function OwnerRoomsPage({
   const rooms = roomsRes?.data || [];
 
   const { mutate: createRoom, isPending: isCreating } = useCreateRoom();
+  const { mutate: updateRoom, isPending: isUpdating } = useUpdateRoom();
   const { mutate: deleteRoom, isPending: isDeleting } = useDeleteRoom();
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     roomType: "SINGLE",
@@ -67,6 +71,7 @@ export default function OwnerRoomsPage({
     dailyRent: "",
     furnished: false,
     availableFrom: new Date().toISOString().split("T")[0],
+    status: "AVAILABLE",
     roomImage: null as File | null,
   });
 
@@ -83,6 +88,7 @@ export default function OwnerRoomsPage({
       "availableFrom",
       new Date(formData.availableFrom).toISOString(),
     );
+    data.append("status", formData.status);
     if (formData.roomImage) data.append("roomImage", formData.roomImage);
 
     createRoom(
@@ -98,10 +104,50 @@ export default function OwnerRoomsPage({
             dailyRent: "",
             furnished: false,
             availableFrom: new Date().toISOString().split("T")[0],
+            status: "AVAILABLE",
             roomImage: null,
           });
         },
       },
+    );
+  };
+
+  const openEditRoom = (room: any) => {
+    setEditingRoom(room);
+    setFormData({
+      name: room.name,
+      roomType: room.roomType,
+      maxOccupants: String(room.maxOccupants),
+      monthlyRent: String(room.monthlyRent),
+      dailyRent: room.dailyRent ? String(room.dailyRent) : "",
+      furnished: room.furnished,
+      availableFrom: new Date(room.availableFrom).toISOString().split("T")[0],
+      status: room.status,
+      roomImage: null,
+    });
+  };
+
+  const handleUpdateRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRoom) return;
+
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("roomType", formData.roomType);
+    data.append("maxOccupants", formData.maxOccupants);
+    data.append("monthlyRent", formData.monthlyRent);
+    if (formData.dailyRent) data.append("dailyRent", formData.dailyRent);
+    data.append("furnished", String(formData.furnished));
+    data.append(
+      "availableFrom",
+      new Date(formData.availableFrom).toISOString(),
+    );
+    data.append("status", formData.status);
+    if (formData.roomImage) data.append("roomImage", formData.roomImage);
+
+    updateRoom(
+      { roomId: editingRoom.id, data },
+      { onSuccess: () => setEditingRoom(null) },
     );
   };
 
@@ -165,11 +211,12 @@ export default function OwnerRoomsPage({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="SINGLE">Single</SelectItem>
-                      <SelectItem value="DOUBLE">Double</SelectItem>
+                      <SelectItem value="MASTER">Master</SelectItem>
                       <SelectItem value="SHARED">Shared</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="maxOccupants">Max Occupants</Label>
                   <Input
@@ -260,6 +307,153 @@ export default function OwnerRoomsPage({
             </form>
           </DialogContent>
         </Dialog>
+        <Dialog
+          open={!!editingRoom}
+          onOpenChange={(open) => !open && setEditingRoom(null)}
+        >
+          <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Update Room Information</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateRoom} className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-room-name">Room Name / Label</Label>
+                  <Input
+                    id="edit-room-name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-room-type">Room Type</Label>
+                  <Select
+                    value={formData.roomType}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, roomType: v as string })
+                    }
+                  >
+                    <SelectTrigger id="edit-room-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SINGLE">Single</SelectItem>
+                      <SelectItem value="SHARED">Shared</SelectItem>
+                      <SelectItem value="MASTER">Master</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-max-occupants">Max Occupants</Label>
+                  <Input
+                    id="edit-max-occupants"
+                    type="number"
+                    min="1"
+                    value={formData.maxOccupants}
+                    onChange={(e) =>
+                      setFormData({ ...formData, maxOccupants: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-furnished">Furnished</Label>
+                  <div className="flex h-10 items-center rounded-md border bg-secondary/20 px-3">
+                    <Switch
+                      checked={formData.furnished}
+                      onCheckedChange={(v) =>
+                        setFormData({ ...formData, furnished: v })
+                      }
+                      id="edit-furnished"
+                    />
+                    <Label htmlFor="edit-furnished" className="ml-2">
+                      Yes, it is furnished
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-monthly-rent">Monthly Rent (৳)</Label>
+                  <Input
+                    id="edit-monthly-rent"
+                    type="number"
+                    min="1"
+                    value={formData.monthlyRent}
+                    onChange={(e) =>
+                      setFormData({ ...formData, monthlyRent: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-daily-rent">Daily Rent (৳) - Optional</Label>
+                  <Input
+                    id="edit-daily-rent"
+                    type="number"
+                    min="1"
+                    value={formData.dailyRent}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dailyRent: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-available-from">Available From</Label>
+                  <Input
+                    id="edit-available-from"
+                    type="date"
+                    value={formData.availableFrom}
+                    onChange={(e) =>
+                      setFormData({ ...formData, availableFrom: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-status">Room Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, status: v as string })
+                    }
+                  >
+                    <SelectTrigger id="edit-status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AVAILABLE">Available</SelectItem>
+                      <SelectItem value="FULL">Full</SelectItem>
+                      <SelectItem value="INACTIVE">Inactive</SelectItem>
+                      <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-image">Replace Room Image</Label>
+                <Input
+                  id="edit-room-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      roomImage: e.target.files?.[0] || null,
+                    })
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave empty to keep the current image.
+                </p>
+              </div>
+              <Button type="submit" disabled={isUpdating} className="w-full">
+                {isUpdating ? "Saving changes..." : "Save Room Changes"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {isLoading ? (
@@ -308,6 +502,15 @@ export default function OwnerRoomsPage({
                   >
                     {room.status}
                   </Badge>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 rounded-full text-white hover:bg-white/20"
+                    onClick={() => openEditRoom(room)}
+                    aria-label={`Edit room ${room.name}`}
+                  >
+                    <EditIcon className="h-3 w-3" />
+                  </Button>
                   <ConfirmationDialog
                     trigger={
                       <Button

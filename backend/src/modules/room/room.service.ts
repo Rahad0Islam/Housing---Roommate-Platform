@@ -81,11 +81,14 @@ const updateRoom = async (
 
   // Upload image only if a file is provided
   if (file) {
+    const previousImagePublicId = room.roomImagePublicId;
     const uploadResult = await uploadImage(
       file.buffer,
     );
 
-    await deleteImage(roomImagePublicId!); // Delete the old image from Cloudinary
+    if (previousImagePublicId) {
+      await deleteImage(previousImagePublicId);
+    }
 
     roomImage = uploadResult.imageUrl;
     roomImagePublicId = uploadResult.publicId;
