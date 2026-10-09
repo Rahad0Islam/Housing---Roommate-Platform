@@ -20,9 +20,25 @@ import { OwnerRoutes } from "./modules/owner/owner.route";
 import { AnalyticsRoutes } from "./modules/analytics/analytics.route";
 
 const app: Application = express();
+
+const allowedOrigins = [
+	config.app_url,
+	config.frontend_url,
+	...(config.node_env === "development"
+		? ["http://localhost:3000", "http://127.0.0.1:3000"]
+		: []),
+].filter((origin): origin is string => Boolean(origin));
+
 app.use(
 	cors({
-		origin: config.app_url,
+		origin: (origin, callback) => {
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true);
+				return;
+			}
+
+			callback(new Error("Origin is not allowed by CORS"));
+		},
 		credentials: true,
 	}),
 );
