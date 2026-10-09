@@ -81,12 +81,12 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg border-muted/50 bg-background/60 backdrop-blur-xl">
+    <Card className="w-full border-white/20 bg-slate-950/55 text-white shadow-2xl shadow-black/30 backdrop-blur-xl">
       <CardHeader className="space-y-2 text-center">
         <CardTitle className="text-3xl font-bold tracking-tight">
           Create an account
         </CardTitle>
-        <CardDescription className="text-muted-foreground">
+        <CardDescription className="text-white/70">
           Enter your details below to create your account
         </CardDescription>
       </CardHeader>
@@ -101,6 +101,7 @@ export function RegisterForm() {
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-white/20 bg-white/[0.08] text-white placeholder:text-white/50 shadow-inner shadow-black/10"
                       placeholder="John Doe"
                       disabled={isPending}
                       {...field}
@@ -118,6 +119,7 @@ export function RegisterForm() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-white/20 bg-white/[0.08] text-white placeholder:text-white/50 shadow-inner shadow-black/10"
                       type="email"
                       placeholder="john@example.com"
                       disabled={isPending}
@@ -137,6 +139,7 @@ export function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <Input
+                        className="border-white/20 bg-white/[0.08] text-white placeholder:text-white/50 shadow-inner shadow-black/10"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         disabled={isPending}
@@ -146,7 +149,7 @@ export function RegisterForm() {
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-0 top-0 h-full px-3 py-2 text-white/70 hover:bg-white/10 hover:text-white"
                         onClick={() => setShowPassword(!showPassword)}
                         disabled={isPending}
                       >
@@ -177,7 +180,7 @@ export function RegisterForm() {
             <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background/60 px-2 text-muted-foreground backdrop-blur-xl">
+            <span className="bg-slate-950/55 px-2 text-white/65 backdrop-blur-md">
               Or continue with
             </span>
           </div>
@@ -186,7 +189,7 @@ export function RegisterForm() {
         <GoogleAuth />
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-center space-y-4">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-white/70">
           Already have an account?{" "}
           <Link
             href="/login"

@@ -14,8 +14,12 @@ import {
 } from "@/api/auth.api";
 
 export const useLogin = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: userLogin,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 };
 
