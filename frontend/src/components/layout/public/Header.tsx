@@ -144,17 +144,29 @@ export function Header() {
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </SheetTrigger>
-            <SheetContent side="right" className="flex flex-col">
-              <nav className="flex flex-col gap-4 mt-8">
+            <SheetContent
+              side="right"
+              className="w-[min(88vw,24rem)] max-w-none gap-0 border-l border-border/70 bg-background/95 p-0 backdrop-blur-xl"
+            >
+              <div className="flex min-h-full flex-col px-5 pb-6 pt-20 sm:px-7">
+                <div className="mb-6 border-b border-border/70 pb-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                    Explore
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Find your next place to belong.
+                  </p>
+                </div>
+              <nav className="flex flex-col gap-1">
                 {navigation.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`text-lg font-medium transition-colors ${
+                    className={`flex min-h-12 items-center rounded-xl px-4 text-base font-semibold transition-colors ${
                       isActive(item.href)
-                        ? "text-foreground"
-                        : "text-foreground/60"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     {item.name}
@@ -164,21 +176,21 @@ export function Header() {
                   <Link
                     href="/dashboard"
                     onClick={() => setIsOpen(false)}
-                    className={`text-lg font-medium transition-colors ${
+                    className={`flex min-h-12 items-center rounded-xl px-4 text-base font-semibold transition-colors ${
                       pathname.startsWith("/dashboard")
-                        ? "text-foreground"
-                        : "text-foreground/60"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     Dashboard
                   </Link>
                 )}
               </nav>
-              <div className="mt-auto flex flex-col gap-4">
+              <div className="mt-auto border-t border-border/70 pt-5">
                 {!isLoading &&
                   (user ? (
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-3">
+                      <div className="mb-2 flex items-center gap-3 rounded-xl bg-muted/60 p-3">
                         <Avatar className="h-10 w-10">
                           {user.data?.profileImage && (
                             <AvatarImage
@@ -202,7 +214,7 @@ export function Header() {
                       <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                         <Button
                           variant="outline"
-                          className="w-full justify-start"
+                          className="h-11 w-full justify-start"
                         >
                           <User className="mr-2 h-4 w-4" />
                           Dashboard
@@ -210,7 +222,7 @@ export function Header() {
                       </Link>
                       <Button
                         variant="destructive"
-                        className="w-full justify-start"
+                        className="h-11 w-full justify-start"
                         onClick={() => {
                           setIsOpen(false);
                           logout(undefined, {
@@ -223,17 +235,20 @@ export function Header() {
                       </Button>
                     </div>
                   ) : (
-                    <>
+                    <div className="grid gap-3">
                       <Link href="/login" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="h-11 w-full">
                           Log in
                         </Button>
                       </Link>
                       <Link href="/register" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full">Get Started</Button>
+                        <Button className="h-11 w-full shadow-lg shadow-primary/20">
+                          Get Started
+                        </Button>
                       </Link>
-                    </>
+                    </div>
                   ))}
+              </div>
               </div>
             </SheetContent>
           </Sheet>
