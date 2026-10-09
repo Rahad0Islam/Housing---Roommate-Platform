@@ -29,6 +29,7 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { format } from "date-fns";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,15 +40,11 @@ export default function UsersPage() {
   const { mutate: activateUser, isPending: isActivating } = useActivateUser();
 
   const handleBlock = (userId: string) => {
-    if (confirm("Are you sure you want to block this user?")) {
-      blockUser(userId);
-    }
+    blockUser(userId);
   };
 
   const handleActivate = (userId: string) => {
-    if (confirm("Are you sure you want to activate this user?")) {
-      activateUser(userId);
-    }
+    activateUser(userId);
   };
 
   const getRoleBadge = (role: string) => {
@@ -169,22 +166,37 @@ export default function UsersPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {user.userStatus === "ACTIVE" ? (
-                              <DropdownMenuItem
-                                className="text-red-600 focus:text-red-600"
-                                onClick={() => handleBlock(user.id)}
-                                disabled={isBlocking || user.role === "ADMIN"}
-                              >
-                                <BanIcon className="mr-2 h-4 w-4" /> Block User
-                              </DropdownMenuItem>
+                              <ConfirmationDialog
+                                trigger={
+                                  <DropdownMenuItem
+                                    className="text-red-600 focus:text-red-600"
+                                    disabled={isBlocking || user.role === "ADMIN"}
+                                  >
+                                    <BanIcon className="mr-2 h-4 w-4" /> Block User
+                                  </DropdownMenuItem>
+                                }
+                                title="Block this user?"
+                                description="The user will no longer be able to access their account until activated again."
+                                confirmLabel="Block user"
+                                destructive
+                                onConfirm={() => handleBlock(user.id)}
+                              />
                             ) : (
-                              <DropdownMenuItem
-                                className="text-green-600 focus:text-green-600"
-                                onClick={() => handleActivate(user.id)}
-                                disabled={isActivating || user.role === "ADMIN"}
-                              >
-                                <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
-                                Activate User
-                              </DropdownMenuItem>
+                              <ConfirmationDialog
+                                trigger={
+                                  <DropdownMenuItem
+                                    className="text-green-600 focus:text-green-600"
+                                    disabled={isActivating || user.role === "ADMIN"}
+                                  >
+                                    <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
+                                    Activate User
+                                  </DropdownMenuItem>
+                                }
+                                title="Activate this user?"
+                                description="This will restore the user's access to the platform."
+                                confirmLabel="Activate user"
+                                onConfirm={() => handleActivate(user.id)}
+                              />
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>

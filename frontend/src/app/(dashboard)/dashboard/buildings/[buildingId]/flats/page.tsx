@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   PlusIcon,
   TrashIcon,
@@ -243,21 +244,24 @@ export default function OwnerFlatsPage({
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                     {flat.flatNumber}
                   </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 -mr-2 -mt-2"
-                    onClick={() => {
-                      if (
-                        confirm("Are you sure you want to delete this flat?")
-                      ) {
-                        deleteFlat(flat.id);
-                      }
-                    }}
-                    disabled={isDeleting}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
+                  <ConfirmationDialog
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="-mr-2 -mt-2 text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
+                        disabled={isDeleting}
+                        aria-label={`Delete flat ${flat.name}`}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    }
+                    title="Delete this flat?"
+                    description="This flat and its related room data will be permanently removed. This action cannot be undone."
+                    confirmLabel="Delete flat"
+                    destructive
+                    onConfirm={() => deleteFlat(flat.id)}
+                  />
                 </div>
 
                 <div className="space-y-1 mb-6 flex-1">

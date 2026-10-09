@@ -35,6 +35,7 @@ import {
   PlayCircleIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export default function BookingsPage() {
   const { data: userRes } = useGetMe();
@@ -51,33 +52,27 @@ export default function BookingsPage() {
     useOnGoingBooking();
 
   const handleCancel = (id: string) => {
-    if (confirm("Are you sure you want to cancel this booking?")) {
-      cancelBooking(id, {
-        onSuccess: () => toast.success("Booking cancelled"),
-        onError: (err: any) =>
-          toast.error(err?.response?.data?.message || "Failed to cancel"),
-      });
-    }
+    cancelBooking(id, {
+      onSuccess: () => toast.success("Booking cancelled"),
+      onError: (err: any) =>
+        toast.error(err?.response?.data?.message || "Failed to cancel"),
+    });
   };
 
   const handleOngoing = (id: string) => {
-    if (confirm("Mark this booking as ONGOING (tenant has moved in)?")) {
-      onGoingBooking(id, {
-        onSuccess: () => toast.success("Booking marked as ongoing"),
-        onError: (err: any) =>
-          toast.error(err?.response?.data?.message || "Failed to update"),
-      });
-    }
+    onGoingBooking(id, {
+      onSuccess: () => toast.success("Booking marked as ongoing"),
+      onError: (err: any) =>
+        toast.error(err?.response?.data?.message || "Failed to update"),
+    });
   };
 
   const handleComplete = (id: string) => {
-    if (confirm("Mark this booking as COMPLETED (tenant has left)?")) {
-      completeBooking(id, {
-        onSuccess: () => toast.success("Booking marked as completed"),
-        onError: (err: any) =>
-          toast.error(err?.response?.data?.message || "Failed to update"),
-      });
-    }
+    completeBooking(id, {
+      onSuccess: () => toast.success("Booking marked as completed"),
+      onError: (err: any) =>
+        toast.error(err?.response?.data?.message || "Failed to update"),
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -197,36 +192,56 @@ export default function BookingsPage() {
                           <DropdownMenuContent align="end">
                             {/* Tenant and Owner can cancel if Pending */}
                             {booking.status === "PENDING" && (
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => handleCancel(booking.id)}
-                                disabled={isCancelling}
-                              >
-                                <XCircleIcon className="mr-2 h-4 w-4" /> Cancel
-                                Booking
-                              </DropdownMenuItem>
+                              <ConfirmationDialog
+                                trigger={
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    disabled={isCancelling}
+                                  >
+                                    <XCircleIcon className="mr-2 h-4 w-4" /> Cancel
+                                    Booking
+                                  </DropdownMenuItem>
+                                }
+                                title="Cancel this booking?"
+                                description="This booking will be cancelled and the tenant and owner will be notified."
+                                confirmLabel="Cancel booking"
+                                destructive
+                                onConfirm={() => handleCancel(booking.id)}
+                              />
                             )}
 
                             {/* Only Owners/Admins can mark as Ongoing or Completed */}
                             {isOwner && booking.status === "CONFIRMED" && (
-                              <DropdownMenuItem
-                                className="text-green-600"
-                                onClick={() => handleOngoing(booking.id)}
-                                disabled={isSettingOngoing}
-                              >
-                                <PlayCircleIcon className="mr-2 h-4 w-4" /> Mark
-                                as Ongoing
-                              </DropdownMenuItem>
+                              <ConfirmationDialog
+                                trigger={
+                                  <DropdownMenuItem
+                                    className="text-green-600"
+                                    disabled={isSettingOngoing}
+                                  >
+                                    <PlayCircleIcon className="mr-2 h-4 w-4" /> Mark
+                                    as Ongoing
+                                  </DropdownMenuItem>
+                                }
+                                title="Mark booking as ongoing?"
+                                description="Use this when the tenant has moved into the property."
+                                confirmLabel="Mark as ongoing"
+                                onConfirm={() => handleOngoing(booking.id)}
+                              />
                             )}
 
                             {isOwner && booking.status === "ON_GOING" && (
-                              <DropdownMenuItem
-                                onClick={() => handleComplete(booking.id)}
-                                disabled={isCompleting}
-                              >
-                                <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
-                                Mark as Completed
-                              </DropdownMenuItem>
+                              <ConfirmationDialog
+                                trigger={
+                                  <DropdownMenuItem disabled={isCompleting}>
+                                    <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
+                                    Mark as Completed
+                                  </DropdownMenuItem>
+                                }
+                                title="Complete this booking?"
+                                description="Use this when the tenant has moved out and the booking is finished."
+                                confirmLabel="Complete booking"
+                                onConfirm={() => handleComplete(booking.id)}
+                              />
                             )}
 
                             {/* Fallback if no actions are available */}

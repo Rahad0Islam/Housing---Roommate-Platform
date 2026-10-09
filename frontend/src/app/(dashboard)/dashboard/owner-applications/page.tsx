@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export default function OwnerApplicationsPage() {
   const { data: appsRes, isLoading } = useGetAllOwnerApplications();
@@ -44,19 +45,11 @@ export default function OwnerApplicationsPage() {
     useRejectOwnerApplication();
 
   const handleApprove = (id: string) => {
-    if (
-      confirm(
-        "Are you sure you want to approve this application? The user will become an OWNER.",
-      )
-    ) {
-      approve(id);
-    }
+    approve(id);
   };
 
   const handleReject = (id: string) => {
-    if (confirm("Are you sure you want to reject this application?")) {
-      reject(id);
-    }
+    reject(id);
   };
 
   const getStatusBadge = (status: string) => {
@@ -160,22 +153,37 @@ export default function OwnerApplicationsPage() {
                           <DropdownMenuContent align="end">
                             {app.status === "PENDING" && (
                               <>
-                                <DropdownMenuItem
-                                  className="text-green-600 focus:text-green-600"
-                                  onClick={() => handleApprove(app.id)}
-                                  disabled={isApproving || isRejecting}
-                                >
-                                  <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
-                                  Approve Application
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-red-600 focus:text-red-600"
-                                  onClick={() => handleReject(app.id)}
-                                  disabled={isApproving || isRejecting}
-                                >
-                                  <XCircleIcon className="mr-2 h-4 w-4" />{" "}
-                                  Reject Application
-                                </DropdownMenuItem>
+                                <ConfirmationDialog
+                                  trigger={
+                                    <DropdownMenuItem
+                                      className="text-green-600 focus:text-green-600"
+                                      disabled={isApproving || isRejecting}
+                                    >
+                                      <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
+                                      Approve Application
+                                    </DropdownMenuItem>
+                                  }
+                                  title="Approve this application?"
+                                  description="The applicant will receive OWNER access and can begin managing properties."
+                                  confirmLabel="Approve application"
+                                  onConfirm={() => handleApprove(app.id)}
+                                />
+                                <ConfirmationDialog
+                                  trigger={
+                                    <DropdownMenuItem
+                                      className="text-red-600 focus:text-red-600"
+                                      disabled={isApproving || isRejecting}
+                                    >
+                                      <XCircleIcon className="mr-2 h-4 w-4" />{" "}
+                                      Reject Application
+                                    </DropdownMenuItem>
+                                  }
+                                  title="Reject this application?"
+                                  description="The applicant will not receive OWNER access. You can review the application again later."
+                                  confirmLabel="Reject application"
+                                  destructive
+                                  onConfirm={() => handleReject(app.id)}
+                                />
                               </>
                             )}
                             {app.status !== "PENDING" && (

@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Select,
   SelectContent,
@@ -307,21 +308,24 @@ export default function OwnerRoomsPage({
                   >
                     {room.status}
                   </Badge>
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="w-6 h-6 rounded-full"
-                    onClick={() => {
-                      if (
-                        confirm("Are you sure you want to delete this room?")
-                      ) {
-                        deleteRoom(room.id);
-                      }
-                    }}
-                    disabled={isDeleting}
-                  >
-                    <TrashIcon className="w-3 h-3" />
-                  </Button>
+                  <ConfirmationDialog
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="h-6 w-6 rounded-full"
+                        disabled={isDeleting}
+                        aria-label={`Delete room ${room.name}`}
+                      >
+                        <TrashIcon className="h-3 w-3" />
+                      </Button>
+                    }
+                    title="Delete this room?"
+                    description="This room will be permanently removed from the flat. This action cannot be undone."
+                    confirmLabel="Delete room"
+                    destructive
+                    onConfirm={() => deleteRoom(room.id)}
+                  />
                 </div>
               </div>
               <CardContent className="p-5">

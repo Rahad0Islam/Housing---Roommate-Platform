@@ -305,7 +305,16 @@ const deleteBuilding = async (buildingId: string, userId: string) => {
     where: { id: buildingId },
   });
 
-  await deleteImage(building.buildingImagePublicId!); // Delete the image from Cloudinary
+  if (building.buildingImagePublicId) {
+    try {
+      await deleteImage(building.buildingImagePublicId);
+    } catch (error) {
+      console.error(
+        `Building ${buildingId} was deleted, but its Cloudinary image could not be removed`,
+        error,
+      );
+    }
+  }
 
   return { message: "Building deleted successfully" };
 }

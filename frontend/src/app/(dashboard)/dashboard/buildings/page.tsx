@@ -8,6 +8,7 @@ import {
   useDeleteBuilding,
 } from "@/hooks/building.hook";
 import { useCreateAmenity, useDeleteAmenity } from "@/hooks/amenity.hook";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Card,
   CardContent,
@@ -481,23 +482,24 @@ export default function OwnerBuildingsPage() {
                     >
                       <EditIcon className="w-4 h-4" />
                     </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            "Are you sure you want to delete this building?",
-                          )
-                        ) {
-                          deleteBuilding(building.id);
-                        }
-                      }}
-                      disabled={isDeleting}
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </Button>
+                    <ConfirmationDialog
+                      trigger={
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
+                          disabled={isDeleting}
+                          aria-label={`Delete ${building.name}`}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      }
+                      title="Delete this building?"
+                      description={`This will permanently remove ${building.name} and its related property data. This action cannot be undone.`}
+                      confirmLabel="Delete building"
+                      destructive
+                      onConfirm={() => deleteBuilding(building.id)}
+                    />
                   </div>
                 </div>
               </CardContent>
