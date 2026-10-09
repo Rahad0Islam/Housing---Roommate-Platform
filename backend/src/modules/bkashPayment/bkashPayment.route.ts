@@ -9,7 +9,7 @@ import { bkashPaymentController } from "./bkashPayment.controller";
 const router = Router();
 
 router.post("/create-payment",
-    auth(UserRole.TENANT),
+    auth(UserRole.TENANT, UserRole.ADMIN),
     bkashPaymentController.createBkashPayment
 );
 
@@ -18,7 +18,7 @@ router.get("/booking_payment/callback",
 );
 
 router.post("/create-monthly-payment",
-    auth(UserRole.TENANT),
+    auth(UserRole.TENANT, UserRole.ADMIN),
     bkashPaymentController.monthlyBkashPayment
 );
 

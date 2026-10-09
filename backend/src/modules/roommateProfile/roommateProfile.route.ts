@@ -47,6 +47,12 @@ router.get(
 );
 
 router.get(
+  "/best-matches",
+  auth(UserRole.TENANT),
+  RoommateProfileController.getBestMatches
+);
+
+router.get(
   "/:id",
   auth(UserRole.TENANT),
   RoommateProfileController.findRoommateProfileById

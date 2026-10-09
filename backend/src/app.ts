@@ -15,14 +15,30 @@ import { UtilityBillRoutes } from "./modules/utilitybill/utilitybill.route";
 import { MonthlyPaymentRoutes } from "./modules/monthlypayment/monthlypayment.route";
 import { AmenityRoutes } from "./modules/amenity/amenity.route";
 import { RoommateProfileRoutes } from "./modules/roommateProfile/roommateProfile.route";
-import { UserProfileImageRoutes } from "./modules/user/user.route";
+import { UserRoutes } from "./modules/user/user.route";
 import { OwnerRoutes } from "./modules/owner/owner.route";
 import { AnalyticsRoutes } from "./modules/analytics/analytics.route";
 
 const app: Application = express();
+
+const allowedOrigins = [
+	config.app_url,
+	config.frontend_url,
+	...(config.node_env === "development"
+		? ["http://localhost:3000", "http://127.0.0.1:3000"]
+		: []),
+].filter((origin): origin is string => Boolean(origin));
+
 app.use(
 	cors({
-		origin: config.app_url,
+		origin: (origin, callback) => {
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true);
+				return;
+			}
+
+			callback(new Error("Origin is not allowed by CORS"));
+		},
 		credentials: true,
 	}),
 );
@@ -44,7 +60,8 @@ app.use("/api/v1/utility-bills", UtilityBillRoutes);
 app.use("/api/v1/monthly-payments", MonthlyPaymentRoutes);
 app.use("/api/v1/amenities", AmenityRoutes);
 app.use("/api/v1/roommate-profiles",RoommateProfileRoutes);
-app.use("/api/v1/userprofileimage",UserProfileImageRoutes);
+app.use("/api/v1/users", UserRoutes);
+app.use("/api/v1/userprofileimage", UserRoutes);
 app.use("/api/v1/owners",OwnerRoutes);
 app.use("/api/v1/analytics", AnalyticsRoutes);
 

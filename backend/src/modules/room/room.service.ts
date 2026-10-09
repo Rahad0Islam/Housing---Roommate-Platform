@@ -81,11 +81,14 @@ const updateRoom = async (
 
   // Upload image only if a file is provided
   if (file) {
+    const previousImagePublicId = room.roomImagePublicId;
     const uploadResult = await uploadImage(
       file.buffer,
     );
 
-    await deleteImage(roomImagePublicId!); // Delete the old image from Cloudinary
+    if (previousImagePublicId) {
+      await deleteImage(previousImagePublicId);
+    }
 
     roomImage = uploadResult.imageUrl;
     roomImagePublicId = uploadResult.publicId;
@@ -169,11 +172,8 @@ const getRoomsByFlatId = async (flatId: string) => {
     },
   });
 
-  if (!rooms || rooms.length === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No rooms found for this flat"
-    );
+  if (!rooms) {
+    return [];
   }
 
   return rooms;

@@ -74,6 +74,12 @@ const approveOwnerApplication = async (ownerId: string, userId: string) => {
     data: { status: OwnerStatus.VERIFIED },
   });
 
+  // Update the user's role to OWNER
+  await prisma.user.update({
+    where: { id: updatedOwner.userId },
+    data: { role: UserRole.OWNER },
+  });
+
     return updatedOwner;
     };
 

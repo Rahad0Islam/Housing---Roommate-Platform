@@ -44,9 +44,22 @@ const verifyEmailZodSchema = z.object({
 	email: z.string().email("Invalid email format"),
 	otp: z.string().length(6, "OTP must be 6 characters long"),
 });
+
+const changePasswordZodSchema = z.object({
+	oldPassword: z.string(),
+	newPassword: z
+		.string()
+		.min(6, "Password must be at least 6 characters long")
+		.regex(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+			"Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+		),
+});
+
 export const authValidation = {
 	userRegisterationZodSchema,
 	loginUserZodSchema,
 	resetPasswordZodSchema,
 	verifyEmailZodSchema,
+	changePasswordZodSchema,
 };

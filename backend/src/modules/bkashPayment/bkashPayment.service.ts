@@ -67,17 +67,12 @@ const createBkashPayment = async (payload: IBkashPayment, userId: string) => {
 		const result = await response.json();
 
     const isPaymentExists = await tx.payment.findUnique({
-    where: { 
-        tenantId: userId,
-        merchantInvoiceNumber: result.merchantInvoiceNumber,
-    },
-    
-  });
+        where: { merchantInvoiceNumber: result.merchantInvoiceNumber },
+    });
      
   if( isPaymentExists){
      await tx.payment.update({
         where: { 
-            tenantId: userId,
             merchantInvoiceNumber: result.merchantInvoiceNumber,
         },
         data: {
@@ -159,7 +154,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -169,7 +164,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
         }
         else if (status === "success") {
 
@@ -199,7 +194,7 @@ const bkashCallback = async (query: Record<string, any>)  => {
             });
 
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/bookings?status=success` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/payment/success?id=${excutePaymentResult.merchantInvoiceNumber}&type=booking` };
 
         }  
 
@@ -270,17 +265,12 @@ const   transactionResult = await prisma.$transaction(async (tx) => {
 		const result = await response.json();
 
       const isPaymentExists = await tx.payment.findUnique({
-    where: { 
-        tenantId: userId,
-        merchantInvoiceNumber: result.merchantInvoiceNumber,
-    },
-    
-  });
+        where: { merchantInvoiceNumber: result.merchantInvoiceNumber },
+      });
      
   if( isPaymentExists){
      await tx.payment.update({
         where: { 
-            tenantId: userId,
             merchantInvoiceNumber: result.merchantInvoiceNumber,
         },
         data: {
@@ -361,7 +351,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
         }
         else if (status === "cancel") {
             await tx.payment.update({
@@ -371,7 +361,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                     gatewayResponse: excutePaymentResult,
                 },
             });
-             return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=cancelled` };
+             return { redirectUrl: `${config.frontend_url}/dashboard/payment/failed?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
         }
         else if (status === "success") {
 
@@ -393,7 +383,7 @@ const bkashMonthlyCallback = async (query: Record<string, any>)  => {
                 },
             });
           
-          return { redirectUrl: `${config.frontend_url}/dashboard/monthlyPay?status=success` };
+          return { redirectUrl: `${config.frontend_url}/dashboard/payment/success?id=${excutePaymentResult.merchantInvoiceNumber}&type=monthly` };
 
         }  
 

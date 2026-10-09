@@ -1,83 +1,60 @@
 import type { NextFunction, Request, Response } from "express";
 import type { JwtPayload } from "jsonwebtoken";
-
+import { UserRole } from "../../generated/prisma/enums";
 import { prisma } from "../lib/prisma";
 import { catchAsync } from "../utils/catchAsync";
-import { UserRole } from "../../generated/prisma/enums";
+import AppError from "../utils/appError";
 import config from "../config/config";
 import { jwtUtils } from "../utils/jwt";
 
 export interface requestUser {
-	email: string;
-	name: string;
-	userId: string;
-	role: UserRole;
+  email: string;
+  name: string;
+  userId: string;
+  role: UserRole;
 }
+
 declare global {
-	namespace Express {
-		interface Request {
-			user?: requestUser;
-		}
-	}
+  namespace Express {
+    interface Request {
+      user?: requestUser;
+    }
+  }
 }
 
-// auth(UserRole.ADMIN, UserRole.USER, UserRole.AUTHOR)
-// auth() => ...requiredRoles => [UserRole.ADMIN, UserRole.USER, UserRole.AUTHOR]
-export const auth = (...requiredRoles: UserRole[]) => {
-	return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-		const token = req.cookies.accessToken
-			? req.cookies.accessToken
-			: req.headers.authorization?.startsWith("Bearer ")
-				? req.headers.authorization?.split(" ")[1]
-				: req.headers.authorization;
+export const auth = (...requiredRoles: UserRole[]) =>
+  catchAsync(async (req: Request, _res: Response, next: NextFunction) => {
+    const token = req.cookies.accessToken
+      ? req.cookies.accessToken
+      : req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.headers.authorization;
 
-		if (!token) {
-			throw new Error(
-				"You are not logged in. Please log in to access this resource.",
-			);
-		}
+    if (!token) {
+      throw new AppError(401, "You are not logged in. Please log in to access this resource.");
+    }
 
-		const verifiedToken = jwtUtils.verifyToken(token, config.jwt_access_secret);
+    const verifiedToken = jwtUtils.verifyToken(token, config.jwt_access_secret);
+    if (!verifiedToken.success) {
+      throw new AppError(401, verifiedToken.error);
+    }
 
-		if (!verifiedToken.success) {
-			throw new Error(verifiedToken.error);
-		}
+    const { email, name, userId, role } = verifiedToken.data as JwtPayload;
+    if (requiredRoles.length && !requiredRoles.includes(role)) {
+      throw new AppError(403, "Forbidden access");
+    }
 
-		const { email, name, userId, role } = verifiedToken.data as JwtPayload;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new AppError(401, "User not found. Please log in again.");
+    }
+    if (user.userStatus === "BLOCKED") {
+      throw new AppError(403, "Your account has been blocked. Please contact support.");
+    }
+    if (user.userStatus === "DELETED") {
+      throw new AppError(403, "Your account has been deleted. Please contact support.");
+    }
 
-		if (requiredRoles.length && !requiredRoles.includes(role)) {
-			throw new Error(
-				"Forbidden. You don't have permission to access this resource",
-			);
-		}
-
-		const user = await prisma.user.findUnique({
-			where: {
-				id: userId,
-				email,
-				name,
-				role,
-			},
-		});
-
-		if (!user) {
-			throw new Error("User not found. Please log in again.");
-		}
-
-		if (user.userStatus === "BLOCKED") {
-			throw new Error("Your account has been blocked. Please contact support.");
-		}
-		if (user.userStatus === "DELETED") {
-			throw new Error("Your account has been deleted. Please contact support.");
-		}
-
-		req.user = {
-			email,
-			name,
-			userId,
-			role,
-		};
-
-		next();
-	});
-};
+    req.user = { email, name, userId, role };
+    next();
+  });

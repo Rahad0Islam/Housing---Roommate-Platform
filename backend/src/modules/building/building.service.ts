@@ -71,84 +71,84 @@ const createBuilding = async (
 
 const getAllBuildings = async (query: IbuildingSearchQuery) => {
 
-    //future add query params for filtering and pagination
+  //future add query params for filtering and pagination
+  console.log("ssrahad sjsjdosjojsdposdj")
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
-     const limit = query.limit ? Number(query.limit) : 10;
-           const page = query.page ? Number(query.page) : 1;
-           const skip = (page - 1) * limit;
-           const sortBy = query.sortBy ? query.sortBy : "createdAt";
-           const sortOrder = query.sortOrder ? query.sortOrder : "desc";
-       
-            const andCondition : BuildingWhereInput[] = [];
+  const andCondition: BuildingWhereInput[] = [];
 
-            if(query.searchTerm){
-           andCondition.push({
-           OR:[
-               {
-                   name:{
-                       contains:query.searchTerm,
-                       mode:"insensitive"
-                   }
-               },
-               {
-                   description:{
-                       contains:query.searchTerm,
-                       mode:"insensitive"
-                   }
-               },{
-                    address:{
-                        contains:query.searchTerm,
-                        mode:"insensitive"
-                    }
-               },
-               {
-                     amenities:{
-                        some:{
-                            name:{
-                                contains:query.searchTerm,
-                                mode:"insensitive"
-                            }
-                        }
-                     }
-               },
-              
-               
-           ]
-       })
-       }
+  if (query.searchTerm) {
+    andCondition.push({
+      OR: [
+        {
+          name: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        },
+        {
+          description: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        }, {
+          address: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        },
+        {
+          amenities: {
+            some: {
+              name: {
+                contains: query.searchTerm,
+                mode: "insensitive"
+              }
+            }
+          }
+        },
 
-        if(query.name){
-               andCondition.push({
-                   name:query.name
-               })
-           }
-            if(query.description){
-               andCondition.push({
-                   description:query.description
-               })
-           }
-            if(query.id){
-               andCondition.push({
-                   id:query.id
-               })
-           }
 
-           if(query.city){
-            andCondition.push({
-                city:query.city
-            })
-        }
+      ]
+    })
+  }
 
-         if(query.numberOfFloors){
-            andCondition.push({
-                numberOfFloors:{
-                    lte:Number(query.numberOfFloors)
-                }
-            })
-        }
-          
-   
-       
+  if (query.name) {
+    andCondition.push({
+      name: query.name
+    })
+  }
+  if (query.description) {
+    andCondition.push({
+      description: query.description
+    })
+  }
+  if (query.id) {
+    andCondition.push({
+      id: query.id
+    })
+  }
+
+  if (query.city) {
+    andCondition.push({
+      city: query.city
+    })
+  }
+
+  if (query.numberOfFloors) {
+    andCondition.push({
+      numberOfFloors: {
+        lte: Number(query.numberOfFloors)
+      }
+    })
+  }
+
+
+
   const buildings = await prisma.building.findMany(
     {
       where: andCondition.length > 0 ? { AND: andCondition } : {},
@@ -166,7 +166,13 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
             name: true,
           },
         },
-        
+
+        flats: {
+          include: {
+            rooms: true
+          }
+        }
+
       },
       skip,
       take: limit,
@@ -175,16 +181,17 @@ const getAllBuildings = async (query: IbuildingSearchQuery) => {
       },
     }
   );
-  
-   return {
-        data:buildings,
-        meta:{
-            page,
-            limit,
-            total:buildings.length,
-            totalPages:Math.ceil(buildings.length / limit)
-        }
-    };
+
+  console.log(buildings)
+  return {
+    data: buildings,
+    meta: {
+      page,
+      limit,
+      total: buildings.length,
+      totalPages: Math.ceil(buildings.length / limit)
+    }
+  };
 };
 
 const getBuildingByOwnerId = async (ownerId: string) => {
@@ -198,11 +205,13 @@ const getBuildingByOwnerId = async (ownerId: string) => {
           email: true,
         },
       },
+      flats: true,
+      amenities: true,
     },
   });
 
   if (!buildings || buildings.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No buildings found for this owner");
+    return [];
   }
 
   return buildings;
@@ -211,6 +220,14 @@ const getBuildingByOwnerId = async (ownerId: string) => {
 const getBuildingById = async (buildingId: string) => {
   const building = await prisma.building.findUnique({
     where: { id: buildingId },
+    include: {
+      amenities: true,
+      flats: {
+        include: {
+          rooms: true
+        }
+      }
+    }
   });
 
   if (!building) {
@@ -252,8 +269,8 @@ const updateBuilding = async (
       file.buffer,
     );
 
-     if(imagePublicId) 
-     await deleteImage(imagePublicId); // Delete the old image from Cloudinary
+    if (imagePublicId)
+      await deleteImage(imagePublicId); // Delete the old image from Cloudinary
 
     imageUrl = uploadResult.imageUrl;
     imagePublicId = uploadResult.publicId;
@@ -288,17 +305,26 @@ const deleteBuilding = async (buildingId: string, userId: string) => {
     where: { id: buildingId },
   });
 
-  await deleteImage(building.buildingImagePublicId!); // Delete the image from Cloudinary
+  if (building.buildingImagePublicId) {
+    try {
+      await deleteImage(building.buildingImagePublicId);
+    } catch (error) {
+      console.error(
+        `Building ${buildingId} was deleted, but its Cloudinary image could not be removed`,
+        error,
+      );
+    }
+  }
 
   return { message: "Building deleted successfully" };
 }
 
 
 export const buildingService = {
-    createBuilding,
-    getAllBuildings,
-    getBuildingById,
-    updateBuilding,
-    deleteBuilding,
-    getBuildingByOwnerId
+  createBuilding,
+  getAllBuildings,
+  getBuildingById,
+  updateBuilding,
+  deleteBuilding,
+  getBuildingByOwnerId
 }

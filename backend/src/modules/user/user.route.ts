@@ -7,12 +7,17 @@ import { UserController } from "./user.controller";
 
 const router = Router();
 
+router.get(
+  "/",
+  auth(UserRole.ADMIN),
+  UserController.getAllUsers
+);
+
 router.post(
   "/",
   auth(UserRole.OWNER, UserRole.ADMIN,UserRole.TENANT),
   upload.single("profileImage"),
   UserController.imageUpload
-   
 );
 
 router.delete(
@@ -33,4 +38,10 @@ router.patch(
   UserController.activeUser
 );
 
-export const UserProfileImageRoutes = router;
+router.patch(
+  "/me",
+  auth(UserRole.OWNER, UserRole.ADMIN, UserRole.TENANT),
+  UserController.updateProfile
+);
+
+export const UserRoutes = router;

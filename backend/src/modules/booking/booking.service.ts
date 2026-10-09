@@ -63,7 +63,11 @@ const createBooking = async (payload: IBooking, userId: string) => {
    
   if(oldBooking){
       if(oldBooking.status === BookingStatus.PENDING){
-        throw new AppError(httpStatus.BAD_REQUEST, "You already have a pending booking for this room");
+        const updatedBooking = await prisma.booking.update({
+          where: { id: oldBooking.id },
+          data: { rentType, startDate, endDate, amount }
+        });
+        return updatedBooking;
       }
       if(oldBooking.status === BookingStatus.CONFIRMED){
         throw new AppError(httpStatus.BAD_REQUEST, "You already have a confirmed booking for this room");
@@ -208,10 +212,14 @@ const getAllbooking = async (
   });
 
   if (total === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No bookings found",
-    );
+    return {
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: [],
+    };
   }
 
   // Get paginated bookings

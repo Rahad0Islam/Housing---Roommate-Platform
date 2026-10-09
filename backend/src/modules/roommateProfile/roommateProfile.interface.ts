@@ -36,5 +36,7 @@ page?: string;
   sortBy?: string;
   searchTerm?: string;
   sortOrder?: 'asc' | 'desc';
+  city?: string;
+  building?: string;
   
 }

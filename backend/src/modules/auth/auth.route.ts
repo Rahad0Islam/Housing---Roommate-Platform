@@ -31,11 +31,18 @@ router.get(
 	AuthController.getMe,
 );
 router.post("/refresh-token", AuthController.refreshToken);
+router.post("/logout", AuthController.logoutUser);
 router.post("/google", AuthController.googleLogin);
 router.post("/forgot-password", AuthController.forgotPassword);
 router.post(
 	"/reset-password",
 	validateRequestBody(authValidation.resetPasswordZodSchema),
 	AuthController.resetPassword,
+);
+router.post(
+	"/change-password",
+	auth(UserRole.ADMIN, UserRole.OWNER, UserRole.TENANT),
+	validateRequestBody(authValidation.changePasswordZodSchema),
+	AuthController.changePassword,
 );
 export const AuthRoutes = router;

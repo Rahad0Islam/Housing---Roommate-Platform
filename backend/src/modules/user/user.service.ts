@@ -130,9 +130,88 @@ const activeUser = async (userId: string, adminId: string) => {
 
 
 
+const getAllUsers = async (query: Record<string, any>) => {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    
+    if (query.role) {
+        where.role = query.role;
+    }
+    
+    if (query.status) {
+        where.userStatus = query.status;
+    }
+
+    if (query.searchTerm) {
+        where.OR = [
+            { name: { contains: query.searchTerm, mode: 'insensitive' } },
+            { email: { contains: query.searchTerm, mode: 'insensitive' } },
+        ];
+    }
+
+    const users = await prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            userStatus: true,
+            createdAt: true,
+            profileImage: true,
+        }
+    });
+
+    const total = await prisma.user.count({ where });
+
+    return {
+        data: users,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        }
+    };
+};
+
+const updateProfile = async (userId: string, payload: { name?: string }) => {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            ...(payload.name && { name: payload.name }),
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            profileImage: true,
+        },
+    });
+
+    return updatedUser;
+};
+
 export const UserService = {
     uploadUserImage,
     deleteUserImage,
     blockUser,
     activeUser,
+    getAllUsers,
+    updateProfile,
 };

@@ -176,10 +176,14 @@ const getAllMonthlyPayments = async (
   });
 
   if (total === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No monthly payments found",
-    );
+    return {
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: [],
+    };
   }
 
   // Paginated data
