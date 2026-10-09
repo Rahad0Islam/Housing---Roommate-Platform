@@ -9,10 +9,8 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const stored = localStorage.getItem("roommatefinder-theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    const isDark = stored ? stored === "dark" : prefersDark;
+    // Start new visitors in light mode; an explicit user choice is preserved.
+    const isDark = stored === "dark";
     document.documentElement.classList.toggle("dark", isDark);
     setDark(isDark);
   }, []);
