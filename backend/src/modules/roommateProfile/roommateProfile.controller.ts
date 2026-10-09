@@ -113,9 +113,10 @@ const getBestMatches = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user?.userId;
 
-    const result = await RoommateProfileService.getBestMatches(
-      userId as string
-    );
+    const result = await RoommateProfileService.getBestMatches(userId as string, {
+      city: req.query.city as string | undefined,
+      building: req.query.building as string | undefined,
+    });
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

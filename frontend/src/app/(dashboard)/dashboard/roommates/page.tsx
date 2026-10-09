@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useMyRoommateProfile,
   useCreateRoommateProfile,
   useUpdateRoommateProfile,
   useBestRoommateMatches,
+  useRoommateProfileById,
 } from "@/hooks/roommateProfile.hook";
 import {
   Card,
@@ -42,6 +43,13 @@ import {
   AlertCircleIcon,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function RoommatesPage() {
   const { data: myProfileRes, isLoading: isLoadingProfile } =
@@ -99,39 +107,100 @@ export default function RoommatesPage() {
 }
 
 function RoommateMatchesTab() {
-  const { data: matchesRes, isLoading } = useBestRoommateMatches();
+  const [city, setCity] = useState("");
+  const [building, setBuilding] = useState("");
+  const [appliedFilters, setAppliedFilters] = useState<{
+    city?: string;
+    building?: string;
+  }>({});
+  const [selectedId, setSelectedId] = useState<string>();
+  const { data: matchesRes, isLoading, isFetching } =
+    useBestRoommateMatches(appliedFilters);
+  const { data: profileRes, isLoading: isLoadingProfile } =
+    useRoommateProfileById(selectedId);
   const matches = matchesRes?.data || [];
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-80 w-full rounded-xl" />
-        ))}
-      </div>
-    );
-  }
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setAppliedFilters({
+        city: city.trim() || undefined,
+        building: building.trim() || undefined,
+      });
+    }, 400);
 
-  if (matches.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-12 text-center flex flex-col items-center justify-center">
-          <SearchIcon className="w-12 h-12 text-muted-foreground opacity-30 mb-4" />
-          <h3 className="text-xl font-semibold">No matches found</h3>
-          <p className="text-muted-foreground">
-            Check back later or adjust your preferences to find more matches.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+    return () => window.clearTimeout(timer);
+  }, [city, building]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <>
+      <Card className="mb-6 border-primary/15 bg-card/80">
+        <CardContent className="grid gap-4 p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+          <div className="space-y-2">
+            <Label htmlFor="roommate-city">Search by city</Label>
+            <Input
+              id="roommate-city"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              placeholder="e.g. Dhaka"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="roommate-building">Search by building</Label>
+            <Input
+              id="roommate-building"
+              value={building}
+              onChange={(event) => setBuilding(event.target.value)}
+              placeholder="Building name"
+            />
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setCity("");
+              setBuilding("");
+            }}
+            disabled={!city && !building}
+          >
+            Clear filters
+          </Button>
+        </CardContent>
+      </Card>
+      {isFetching && (
+        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          Updating matches...
+        </div>
+      )}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-80 w-full rounded-xl" />
+          ))}
+        </div>
+      ) : matches.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+            <SearchIcon className="mb-4 h-12 w-12 text-muted-foreground opacity-30" />
+            <h3 className="text-xl font-semibold">No matches found</h3>
+            <p className="text-muted-foreground">
+              Try another city or building name to find more matches.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       {matches.map((match: any) => (
         <Card
           key={match.id}
           className="group relative overflow-hidden border-primary/10 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10"
+          onClick={() => setSelectedId(match.id)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              setSelectedId(match.id);
+            }
+          }}
         >
           <div className="relative h-32 overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-indigo-700">
             <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-white/10 blur-2xl transition-transform duration-500 group-hover:scale-125" />
@@ -272,13 +341,62 @@ function RoommateMatchesTab() {
               </div>
               <div className="flex items-center gap-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
                 <MoonIcon className="h-3.5 w-3.5 text-primary" />
-                <span>Looking for a compatible living rhythm</span>
+                <span>
+                  {match.user?.bookings?.[0]?.room?.flat?.building
+                    ? `${match.user.bookings[0].room.flat.building.name} · ${match.user.bookings[0].room.flat.building.city}`
+                    : "Residence not listed"}
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
       ))}
-    </div>
+      </div>
+      )}
+      <Dialog
+        open={!!selectedId}
+        onOpenChange={(open) => !open && setSelectedId(undefined)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {profileRes?.data?.user?.name || "Roommate profile"}
+            </DialogTitle>
+            <DialogDescription>
+              Review lifestyle preferences and current residence details.
+            </DialogDescription>
+          </DialogHeader>
+          {isLoadingProfile ? (
+            <Skeleton className="h-28 w-full" />
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {profileRes?.data?.bio || "No bio added yet."}
+              </p>
+              {profileRes?.data?.user?.bookings?.[0]?.room ? (
+                <div className="rounded-xl border border-primary/15 bg-primary/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    Current residence
+                  </p>
+                  <p className="mt-2 font-semibold">
+                    {profileRes.data.user.bookings[0].room.flat.building.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {profileRes.data.user.bookings[0].room.flat.building.city} · Flat{" "}
+                    {profileRes.data.user.bookings[0].room.flat.flatNumber} · Room{" "}
+                    {profileRes.data.user.bookings[0].room.name}
+                  </p>
+                </div>
+              ) : (
+                <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
+                  This roommate has not listed an active residence.
+                </p>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

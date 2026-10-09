@@ -338,6 +338,33 @@ const findRoommateProfileById = async (id: string) => {
           id: true,
           name: true,
           profileImage: true,
+          bookings: {
+            where: { status: { in: ["CONFIRMED", "ON_GOING"] } },
+            orderBy: { startDate: "desc" },
+            take: 1,
+            select: {
+              room: {
+                select: {
+                  id: true,
+                  name: true,
+                  flat: {
+                    select: {
+                      id: true,
+                      flatNumber: true,
+                      building: {
+                        select: {
+                          id: true,
+                          name: true,
+                          city: true,
+                          address: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -354,7 +381,10 @@ const findRoommateProfileById = async (id: string) => {
 };
 
 
-const getBestMatches = async (userId: string) => {
+const getBestMatches = async (
+  userId: string,
+  query: { city?: string; building?: string } = {},
+) => {
   // 1. Get the current user's profile
   const currentUserProfile = await prisma.roommateProfile.findUnique({
     where: { userId },
@@ -370,6 +400,29 @@ const getBestMatches = async (userId: string) => {
       userId: {
         not: userId, // exclude current user
       },
+      ...(query.city || query.building
+        ? {
+            user: {
+              bookings: {
+                some: {
+                  status: { in: ["CONFIRMED", "ON_GOING"] },
+                  room: {
+                    flat: {
+                      building: {
+                        ...(query.city
+                          ? { city: { contains: query.city, mode: "insensitive" } }
+                          : {}),
+                        ...(query.building
+                          ? { name: { contains: query.building, mode: "insensitive" } }
+                          : {}),
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }
+        : {}),
     },
     include: {
       user: {
@@ -378,6 +431,33 @@ const getBestMatches = async (userId: string) => {
           name: true,
           email: true,
           profileImage: true,
+          bookings: {
+            where: { status: { in: ["CONFIRMED", "ON_GOING"] } },
+            orderBy: { startDate: "desc" },
+            take: 1,
+            select: {
+              room: {
+                select: {
+                  id: true,
+                  name: true,
+                  flat: {
+                    select: {
+                      id: true,
+                      flatNumber: true,
+                      building: {
+                        select: {
+                          id: true,
+                          name: true,
+                          city: true,
+                          address: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -402,9 +482,12 @@ const getBestMatches = async (userId: string) => {
     
     if (maxMinBudget > minMaxBudget) {
       const diff = maxMinBudget - minMaxBudget;
-      score -= Math.min(30, diff / 50); 
-    } else {
-      score += 10;
+      const largerBudget = Math.max(
+        Number(currentUserProfile.budgetMax),
+        Number(profile.budgetMax),
+        1,
+      );
+      score -= Math.min(30, (diff / largerBudget) * 30);
     }
 
     // Lifestyle matching

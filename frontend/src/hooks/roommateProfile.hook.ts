@@ -1,12 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getBestRoommateMatches, createRoommateProfile, getMyRoommateProfile, updateRoommateProfile } from "@/api/roommateProfile.api";
+import { getBestRoommateMatches, getRoommateProfileById, createRoommateProfile, getMyRoommateProfile, updateRoommateProfile } from "@/api/roommateProfile.api";
 import { toast } from "sonner";
 
-export const useBestRoommateMatches = () => {
+export const useBestRoommateMatches = (params?: { city?: string; building?: string }) => {
   return useQuery({
-    queryKey: ["roommateMatches"],
-    queryFn: getBestRoommateMatches,
+    queryKey: ["roommateMatches", params],
+    queryFn: () => getBestRoommateMatches(params),
     retry: false, // Don't retry if it throws a 400 (e.g. they don't have a profile)
+    placeholderData: (previousData) => previousData,
+    staleTime: 30_000,
+  });
+};
+
+export const useRoommateProfileById = (id?: string) => {
+  return useQuery({
+    queryKey: ["roommateProfile", id],
+    queryFn: () => getRoommateProfileById(id as string),
+    enabled: !!id,
   });
 };
 
