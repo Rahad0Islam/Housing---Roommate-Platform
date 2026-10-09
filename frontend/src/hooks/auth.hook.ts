@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getMe,
   googleLogin,
@@ -69,13 +69,23 @@ export const useChangePassword = () => {
 };
 
 export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 };
 
 export const useUploadProfileImage = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: uploadProfileImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 };

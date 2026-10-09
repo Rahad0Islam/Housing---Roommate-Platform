@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Menu, UserCircle } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./Sidebar";
@@ -54,6 +54,12 @@ export function DashboardHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-full p-1 outline-none transition-colors hover:bg-muted">
               <Avatar className="h-8 w-8">
+                {user.data?.profileImage && (
+                  <AvatarImage
+                    src={user.data.profileImage}
+                    alt={`${user.data.name || "User"} profile`}
+                  />
+                )}
                 <AvatarFallback className="bg-primary text-primary-foreground font-medium">
                   {user.data?.name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>

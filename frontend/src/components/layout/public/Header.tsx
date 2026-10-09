@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Home, LogOut, Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -57,6 +57,18 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+            {!isLoading && user && (
+              <Link
+                href="/dashboard"
+                className={`relative py-2 text-sm font-medium transition-colors hover:text-foreground ${
+                  pathname.startsWith("/dashboard")
+                    ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary"
+                    : "text-muted-foreground"
+                }`}
+              >
+                Dashboard
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -68,6 +80,12 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger className="relative h-8 w-8 rounded-full flex items-center justify-center bg-transparent border-0 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none cursor-pointer">
                     <Avatar className="h-8 w-8">
+                      {user.data?.profileImage && (
+                        <AvatarImage
+                          src={user.data.profileImage}
+                          alt={`${user.data.name || "User"} profile`}
+                        />
+                      )}
                       <AvatarFallback>
                         {user.data?.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
@@ -142,6 +160,19 @@ export function Header() {
                     {item.name}
                   </Link>
                 ))}
+                {!isLoading && user && (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg font-medium transition-colors ${
+                      pathname.startsWith("/dashboard")
+                        ? "text-foreground"
+                        : "text-foreground/60"
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                )}
               </nav>
               <div className="mt-auto flex flex-col gap-4">
                 {!isLoading &&
@@ -149,6 +180,12 @@ export function Header() {
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
+                          {user.data?.profileImage && (
+                            <AvatarImage
+                              src={user.data.profileImage}
+                              alt={`${user.data.name || "User"} profile`}
+                            />
+                          )}
                           <AvatarFallback>
                             {user.data?.name?.charAt(0).toUpperCase() || "U"}
                           </AvatarFallback>
