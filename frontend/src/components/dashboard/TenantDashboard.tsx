@@ -91,7 +91,7 @@ export function TenantDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${stats.payments?.successfulAmount?.toLocaleString() || 0}
+              ৳{stats.payments?.successfulAmount?.toLocaleString() || 0}
             </div>
             <p className="text-xs text-muted-foreground">
               From {stats.payments?.successfulCount || 0} transactions

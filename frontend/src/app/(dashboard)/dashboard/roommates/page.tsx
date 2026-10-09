@@ -226,7 +226,7 @@ function RoommateMatchesTab() {
                       Budget
                     </p>
                     <p className="truncate text-xs font-semibold">
-                      ${match.budgetMin}–${match.budgetMax}
+                      ৳{match.budgetMin}–৳{match.budgetMax}
                     </p>
                   </div>
                 </div>
@@ -367,7 +367,7 @@ function RoommateProfileForm({ initialData }: { initialData?: any }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="budgetMin">Minimum Budget ($/month)</Label>
+                <Label htmlFor="budgetMin">Minimum Budget (৳/month)</Label>
                 <Input
                   id="budgetMin"
                   name="budgetMin"
@@ -378,7 +378,7 @@ function RoommateProfileForm({ initialData }: { initialData?: any }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="budgetMax">Maximum Budget ($/month)</Label>
+                <Label htmlFor="budgetMax">Maximum Budget (৳/month)</Label>
                 <Input
                   id="budgetMax"
                   name="budgetMax"
