@@ -33,8 +33,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl">
-      <div className="page-container flex h-[4.5rem] items-center justify-between">
-        <div className="flex items-center gap-8 lg:gap-12">
+      <div className="page-container relative flex h-[4.5rem] items-center justify-between">
+        <div className="flex items-center">
           <Link href="/" className="group flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:-rotate-3">
               <Home className="h-5 w-5" />
@@ -43,7 +43,7 @@ export function Header() {
               Roommate<span className="text-primary">Finder</span>
             </span>
           </Link>
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 md:flex">
             {navigation.map((item) => (
               <Link
                 key={item.href}
