@@ -68,16 +68,19 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
   const links = getLinks();
 
   return (
-    <div className={cn("flex flex-col h-full bg-white dark:bg-gray-900 border-r dark:border-gray-800", className)}>
-      <div className="p-6 border-b dark:border-gray-800">
-        <Link href="/" className="flex items-center space-x-2">
-          <Home className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl text-gray-900 dark:text-gray-100">RoommateFinder</span>
+    <div className={cn("flex h-full flex-col border-r border-border/70 bg-sidebar", className)}>
+      <div className="border-b border-border/70 p-6">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <Home className="h-5 w-5" />
+          </span>
+          <span className="font-heading text-lg font-bold tracking-tight">Roommate<span className="text-primary">Finder</span></span>
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
+      <nav className="flex-1 overflow-y-auto py-6">
+        <p className="px-6 pb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Workspace</p>
+        <ul className="space-y-1.5 px-3">
           {links.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -88,10 +91,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                   href={link.href}
                   onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/15"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -103,17 +106,17 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         </ul>
       </nav>
 
-      <div className="p-4 border-t dark:border-gray-800">
+      <div className="border-t border-border/70 p-4">
         <ul className="space-y-1">
           <li>
             <Link
               href="/dashboard/profile"
               onClick={onNavigate}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                 pathname === "/dashboard/profile"
                   ? "bg-primary text-primary-foreground"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <UserCircle className="h-5 w-5" />

@@ -1,55 +1,78 @@
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Search, Users, Home as HomeIcon, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, Search, Users, Home as HomeIcon, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center text-center px-4 py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background"></div>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-          Find Your Perfect <br className="hidden md:block" /> Space & Roommate
-        </h1>
-        <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_color-mix(in_oklch,var(--primary)_18%,transparent),transparent_45%)]" />
+        <div className="page-container grid min-h-[calc(100vh-4.5rem)] items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+          <div className="max-w-2xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary">
+              <Sparkles className="h-4 w-4" /> A better way to find your next home
+            </div>
+            <h1 className="text-balance mb-6 font-heading text-5xl font-bold tracking-[-0.04em] text-foreground sm:text-6xl lg:text-7xl">
+              Find a place to <span className="text-primary">belong.</span>
+            </h1>
+            <p className="mb-10 max-w-xl text-lg leading-8 text-muted-foreground">
           The all-in-one platform for housing and roommates. Whether you're an
           owner looking to list a flat, or a tenant searching for the perfect
           room and compatible roommates, we've got you covered.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
-          <Link href="/register" className={buttonVariants({ size: "lg", className: "w-full sm:w-auto" })}>
-            Get Started
-          </Link>
-          <Link href="/properties" className={buttonVariants({ size: "lg", variant: "outline", className: "w-full sm:w-auto" })}>
-            Browse Properties
-          </Link>
+            </p>
+            <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+              <Link href="/buildings" className={buttonVariants({ size: "lg", className: "w-full rounded-full shadow-xl shadow-primary/20 sm:w-auto" })}>
+                Explore homes <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+              <Link href="/register" className={buttonVariants({ size: "lg", variant: "outline", className: "w-full rounded-full sm:w-auto" })}>
+                Create an account
+              </Link>
+            </div>
+            <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
+              <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure payments</span>
+              <span className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Roommate matching</span>
+            </div>
+          </div>
+          <div className="relative mx-auto w-full max-w-lg">
+            <div className="absolute -inset-4 rounded-[2rem] bg-primary/15 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/30 bg-card p-2 shadow-2xl shadow-primary/10">
+              <Image src="/login.png" alt="A welcoming home interior" width={900} height={1125} className="aspect-[4/5] w-full rounded-[1.5rem] object-cover" priority />
+              <div className="absolute bottom-7 left-7 right-7 rounded-2xl border border-white/20 bg-background/85 p-4 shadow-xl backdrop-blur-xl">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">Your next chapter</p>
+                <p className="mt-1 font-heading text-lg font-semibold">Search less. Live more.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 px-4 bg-muted/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <section className="bg-muted/35 px-4 py-24">
+        <div className="page-container">
+          <div className="mb-14 max-w-2xl">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">One platform, less friction</p>
+            <h2 className="mb-4 font-heading text-3xl font-bold tracking-tight md:text-4xl">
               Everything You Need
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <p className="max-w-xl text-muted-foreground">
               Our platform offers a complete suite of tools to manage your
               housing experience, from finding a place to splitting bills.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center text-center p-6 bg-background rounded-2xl shadow-sm border"
+                className="surface flex flex-col items-start p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="mb-3 font-heading text-lg font-semibold">{feature.title}</h3>
+                <p className="text-left text-sm leading-6 text-muted-foreground">
                   {feature.description}
                 </p>
               </div>
@@ -59,16 +82,17 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto max-w-4xl bg-primary text-primary-foreground rounded-3xl p-8 md:p-16 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="px-4 py-24">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-primary p-8 text-center text-primary-foreground shadow-2xl shadow-primary/20 md:p-16">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">Make your move</p>
+          <h2 className="mb-6 font-heading text-3xl font-bold md:text-4xl">
             Ready to find your next home?
           </h2>
           <p className="text-primary-foreground/80 mb-10 text-lg max-w-2xl mx-auto">
             Join thousands of users who have found their perfect living
             situation through our platform. Sign up today and start exploring.
           </p>
-          <Link href="/register" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+          <Link href="/register" className={buttonVariants({ size: "lg", variant: "secondary", className: "rounded-full px-6" })}>
             Create an Account
           </Link>
         </div>

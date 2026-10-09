@@ -1,21 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAdminAnalytics, getOwnerAnalytics, getTenantAnalytics } from "@/api/analytics.api";
+import {
+  getAdminAnalytics,
+  getOwnerAnalytics,
+  getTenantAnalytics,
+} from "@/api/analytics.api";
 
-export const useAdminAnalytics = (query?: any) => {
+type AnalyticsQuery = Record<string, string | number | boolean>;
+
+export const useAdminAnalytics = (query?: AnalyticsQuery) => {
   return useQuery({
     queryKey: ["analytics", "admin", query],
     queryFn: () => getAdminAnalytics(query),
   });
 };
 
-export const useOwnerAnalytics = (query?: any) => {
+export const useOwnerAnalytics = (query?: AnalyticsQuery) => {
   return useQuery({
     queryKey: ["analytics", "owner", query],
     queryFn: () => getOwnerAnalytics(query),
   });
 };
 
-export const useTenantAnalytics = (query?: any) => {
+export const useTenantAnalytics = (query?: AnalyticsQuery) => {
   return useQuery({
     queryKey: ["analytics", "tenant", query],
     queryFn: () => getTenantAnalytics(query),

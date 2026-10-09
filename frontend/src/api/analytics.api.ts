@@ -1,14 +1,19 @@
 import apiClient from "@/lib/apiClient";
-import { IApiResponse } from "@/types/building.types"; // we can reuse or create a global type, wait let me define types.
 
-export const getAdminAnalytics = (query?: any) => {
+export const getAdminAnalytics = (
+  query?: Record<string, string | number | boolean>,
+) => {
   return apiClient("/analytics/admin", { method: "GET", query });
 };
 
-export const getOwnerAnalytics = (query?: any) => {
+export const getOwnerAnalytics = (
+  query?: Record<string, string | number | boolean>,
+) => {
   return apiClient("/analytics/owner", { method: "GET", query });
 };
 
-export const getTenantAnalytics = (query?: any) => {
+export const getTenantAnalytics = (
+  query?: Record<string, string | number | boolean>,
+) => {
   return apiClient("/analytics/tenant", { method: "GET", query });
 };

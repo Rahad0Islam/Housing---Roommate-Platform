@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Home, LogOut, Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
@@ -31,20 +32,22 @@ export function Header() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-2">
-            <Home className="h-6 w-6 text-primary" />
-            <span className="inline-block font-bold">RoommateFinder</span>
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl">
+      <div className="page-container flex h-[4.5rem] items-center justify-between">
+        <div className="flex items-center gap-8 lg:gap-12">
+          <Link href="/" className="group flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:-rotate-3">
+              <Home className="h-5 w-5" />
+            </span>
+            <span className="font-heading text-lg font-bold tracking-tight">Roommate<span className="text-primary">Finder</span></span>
           </Link>
-          <nav className="hidden md:flex gap-6">
+          <nav className="hidden items-center gap-7 md:flex">
             {navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors hover:text-foreground/80 ${
-                  isActive(item.href) ? "text-foreground" : "text-foreground/60"
+                className={`relative py-2 text-sm font-medium transition-colors hover:text-foreground ${
+                  isActive(item.href) ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground"
                 }`}
               >
                 {item.name}
@@ -53,7 +56,8 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           {!isLoading && (
             <div className="hidden md:flex items-center gap-4">
               {user ? (
@@ -100,7 +104,7 @@ export function Header() {
                     </Button>
                   </Link>
                   <Link href="/register">
-                    <Button className="text-sm font-medium">Get Started</Button>
+                    <Button className="rounded-full px-5 text-sm font-medium shadow-lg shadow-primary/20">Get Started</Button>
                   </Link>
                 </>
               )}

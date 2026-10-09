@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="container relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen">
+    <div className="relative flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
         <Image
           src="/registration.png"
@@ -19,7 +19,7 @@ export default function RegisterPage() {
           className="absolute inset-0 object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/30" />
         <div className="relative z-20 flex items-center text-lg font-medium">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,7 @@ export default function RegisterPage() {
           </blockquote>
         </div>
       </div>
-      <div className="p-4 lg:p-8 flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center bg-background p-4 lg:p-8">
         <RegisterForm />
       </div>
     </div>

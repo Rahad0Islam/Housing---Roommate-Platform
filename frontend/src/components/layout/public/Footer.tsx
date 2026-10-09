@@ -3,13 +3,15 @@ import { Home } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
-      <div className="container py-12 md:py-16 lg:py-20">
+    <footer className="border-t border-border/70 bg-card/60">
+      <div className="page-container py-14 md:py-20">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:gap-12">
           <div className="flex flex-col gap-4 md:col-span-1">
-            <Link href="/" className="flex items-center space-x-2">
-              <Home className="h-6 w-6 text-primary" />
-              <span className="inline-block font-bold">RoommateFinder</span>
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <Home className="h-5 w-5" />
+              </span>
+              <span className="font-heading text-lg font-bold tracking-tight">Roommate<span className="text-primary">Finder</span></span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Connecting people with perfect rooms and compatible roommates to
@@ -104,7 +106,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <div className="mt-12 border-t pt-8 text-center md:flex md:items-center md:justify-between md:text-left">
+        <div className="mt-12 border-t border-border/70 pt-8 text-center md:flex md:items-center md:justify-between md:text-left">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} RoommateFinder. All rights
             reserved.
