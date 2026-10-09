@@ -181,10 +181,37 @@ const getAllUsers = async (query: Record<string, any>) => {
     };
 };
 
+const updateProfile = async (userId: string, payload: { name?: string }) => {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            ...(payload.name && { name: payload.name }),
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            profileImage: true,
+        },
+    });
+
+    return updatedUser;
+};
+
 export const UserService = {
     uploadUserImage,
     deleteUserImage,
     blockUser,
     activeUser,
     getAllUsers,
+    updateProfile,
 };

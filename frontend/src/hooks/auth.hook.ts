@@ -8,6 +8,9 @@ import {
   verifyAccount,
   forgotPassword,
   resetPassword,
+  changePassword,
+  updateProfile,
+  uploadProfileImage,
 } from "@/api/auth.api";
 
 export const useLogin = () => {
@@ -56,5 +59,23 @@ export const useForgotPassword = () => {
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: resetPassword,
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: changePassword,
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: updateProfile,
+  });
+};
+
+export const useUploadProfileImage = () => {
+  return useMutation({
+    mutationFn: uploadProfileImage,
   });
 };

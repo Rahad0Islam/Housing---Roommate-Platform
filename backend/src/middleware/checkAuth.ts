@@ -44,7 +44,7 @@ export const auth = (...requiredRoles: UserRole[]) =>
       throw new AppError(403, "Forbidden access");
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId, email, name, role } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new AppError(401, "User not found. Please log in again.");
     }

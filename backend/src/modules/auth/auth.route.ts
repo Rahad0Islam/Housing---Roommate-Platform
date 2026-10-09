@@ -39,4 +39,10 @@ router.post(
 	validateRequestBody(authValidation.resetPasswordZodSchema),
 	AuthController.resetPassword,
 );
+router.post(
+	"/change-password",
+	auth(UserRole.ADMIN, UserRole.OWNER, UserRole.TENANT),
+	validateRequestBody(authValidation.changePasswordZodSchema),
+	AuthController.changePassword,
+);
 export const AuthRoutes = router;

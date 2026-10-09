@@ -36,3 +36,20 @@ export const resetPassword = (payload: {
 }) => {
   return apiClient("/auth/reset-password", { method: "POST", body: payload });
 };
+
+export const changePassword = (payload: { oldPassword: string; newPassword: string }) => {
+  return apiClient("/auth/change-password", { method: "POST", body: payload });
+};
+
+export const updateProfile = (payload: { name: string }) => {
+  return apiClient("/users/me", { method: "PATCH", body: payload });
+};
+
+export const uploadProfileImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("profileImage", file);
+
+  // apiClient uses JSON by default, for FormData we might need to bypass it or configure it.
+  // Assuming apiClient handles FormData if passed as body and headers aren't explicitly forced to application/json
+  return apiClient("/users", { method: "POST", body: formData });
+};

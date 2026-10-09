@@ -198,6 +198,21 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user as IRequestUser;
+	if (!user || !user.userId) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized");
+	}
+	await AuthService.changePassword(user.userId, req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Password changed successfully",
+		data: null,
+	});
+});
+
 export const AuthController = {
 	registerUser,
 	logoutUser,
@@ -208,4 +223,5 @@ export const AuthController = {
 	forgotPassword,
 	resetPassword,
 	verifyUserEmail,
+	changePassword,
 };

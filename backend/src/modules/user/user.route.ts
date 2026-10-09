@@ -38,4 +38,10 @@ router.patch(
   UserController.activeUser
 );
 
+router.patch(
+  "/me",
+  auth(UserRole.OWNER, UserRole.ADMIN, UserRole.TENANT),
+  UserController.updateProfile
+);
+
 export const UserRoutes = router;

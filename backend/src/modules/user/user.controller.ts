@@ -71,10 +71,26 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+	const userId = req.user?.userId;
+	if (!userId) {
+		throw new Error("You are not authorized");
+	}
+	const result = await UserService.updateProfile(userId, req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Profile updated successfully",
+		data: result,
+	});
+});
+
 export const UserController = {
 	imageUpload,
 	deleteUserImage,
 	blockUser,
 	activeUser,
 	getAllUsers,
+	updateProfile,
 };

@@ -11,6 +11,7 @@ import type {
 	IRequestUser,
 	IResetPasswordPayload,
 	IverifyEmailPayload,
+	IChangePasswordPayload,
 } from "./auth.interface";
 import { TokenPayload } from "google-auth-library";
 import { googleClient } from "../../lib/googleAuth";
@@ -578,6 +579,39 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 		// text: `Your OTP for password reset is: ${otp}. It will expire in 5 minutes.`,
 	});
 };
+
+const changePassword = async (userId: string, payload: IChangePasswordPayload) => {
+	const { oldPassword, newPassword } = payload;
+
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
+	});
+
+	if (!user) {
+		throw new AppError(httpStatus.NOT_FOUND, "User not found");
+	}
+
+	if (!user.password) {
+		throw new AppError(httpStatus.BAD_REQUEST, "User does not have a password set");
+	}
+
+	const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
+
+	if (!isPasswordMatched) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Old password does not match");
+	}
+
+	const hashedPassword = await bcrypt.hash(
+		newPassword,
+		Number(config.bcrypt_salt_rounds),
+	);
+
+	await prisma.user.update({
+		where: { id: userId },
+		data: { password: hashedPassword },
+	});
+};
+
 export const AuthService = {
 	registerUser,
 	verifyUserEmail,
@@ -587,4 +621,5 @@ export const AuthService = {
 	googleLogin,
 	forgotPassword,
 	resetPassword,
+	changePassword,
 };
