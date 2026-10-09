@@ -92,7 +92,7 @@ export default function RoomDetailsPage({
     if (!user) {
       toast.error("Please login first to book a room");
       router.push(
-        `/login?redirect=/buildings/${buildingId}/flats/${flatId}/rooms/${roomId}`,
+        `/login?redirect=${encodeURIComponent(`/buildings/${buildingId}/flats/${flatId}/rooms/${roomId}`)}`,
       );
       return;
     }

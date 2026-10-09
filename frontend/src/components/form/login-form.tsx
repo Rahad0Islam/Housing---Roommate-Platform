@@ -34,7 +34,7 @@ import { GoogleAuth } from "../google-auth";
 
 type LoginFormValues = z.infer<typeof loginUserZodSchema>;
 
-export function LoginForm() {
+export function LoginForm({ redirectPath = "/dashboard" }: { redirectPath?: string }) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { mutate: loginUser, isPending } = useLogin();
@@ -52,7 +52,7 @@ export function LoginForm() {
     loginUser(data, {
       onSuccess: () => {
         toast.success("Login successful");
-        router.push("/dashboard");
+        router.push(redirectPath);
       },
       onError: (error: any) => {
         const errMessage = error?.data?.message || error?.response?.data?.message || error?.response?._data?.message || error?.message || "";
@@ -167,7 +167,7 @@ export function LoginForm() {
           </div>
         </div>
 
-        <GoogleAuth />
+        <GoogleAuth redirectPath={redirectPath} />
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-center space-y-4">
         <div className="text-sm text-muted-foreground">

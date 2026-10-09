@@ -5,7 +5,7 @@ import { useGoogleLogin as useApiGoogleLogin } from "@/hooks/auth.hook";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export function GoogleAuth() {
+export function GoogleAuth({ redirectPath = "/dashboard" }: { redirectPath?: string }) {
   const { mutate: apiGoogleLogin, isPending } = useApiGoogleLogin();
   const router = useRouter();
 
@@ -19,7 +19,7 @@ export function GoogleAuth() {
               {
                 onSuccess: () => {
                   toast.success("Successfully logged in with Google");
-                  router.push("/dashboard"); // Redirect to home or dashboard
+                  router.push(redirectPath);
                 },
                 onError: (error: any) => {
                   toast.error("Google login failed", {
