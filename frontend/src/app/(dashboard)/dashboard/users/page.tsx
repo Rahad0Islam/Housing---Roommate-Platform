@@ -29,22 +29,34 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusAction, setStatusAction] = useState<{
+    userId: string;
+    action: "block" | "activate";
+  } | null>(null);
   const { data: usersRes, isLoading } = useUsers({ searchTerm, limit: 50 });
   const users = usersRes?.data || [];
 
   const { mutate: blockUser, isPending: isBlocking } = useBlockUser();
   const { mutate: activateUser, isPending: isActivating } = useActivateUser();
 
-  const handleBlock = (userId: string) => {
-    blockUser(userId);
-  };
+  const handleStatusChange = () => {
+    if (!statusAction) return;
 
-  const handleActivate = (userId: string) => {
-    activateUser(userId);
+    const mutation = statusAction.action === "block" ? blockUser : activateUser;
+    mutation(statusAction.userId, {
+      onSettled: () => setStatusAction(null),
+    });
   };
 
   const getRoleBadge = (role: string) => {
@@ -75,7 +87,7 @@ export default function UsersPage() {
 
   return (
     <div className="gradient-mesh motion-rise space-y-8">
-      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-primary/15 bg-primary/[0.06] p-6 md:flex-row md:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-primary/15 bg-primary/6 p-6 md:flex-row md:items-center">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
             Platform directory
@@ -158,45 +170,42 @@ export default function UsersPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
-                          <DropdownMenuTrigger>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontalIcon className="h-4 w-4" />
-                            </Button>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                                aria-label={`Open actions for ${user.name}`}
+                              />
+                            }
+                          >
+                            <MoreHorizontalIcon className="h-4 w-4" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {user.userStatus === "ACTIVE" ? (
-                              <ConfirmationDialog
-                                trigger={
-                                  <DropdownMenuItem
-                                    className="text-red-600 focus:text-red-600"
-                                    disabled={isBlocking || user.role === "ADMIN"}
-                                  >
-                                    <BanIcon className="mr-2 h-4 w-4" /> Block User
-                                  </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-red-600 focus:text-red-600"
+                                disabled={isBlocking || user.role === "ADMIN"}
+                                onClick={() =>
+                                  setStatusAction({ userId: user.id, action: "block" })
                                 }
-                                title="Block this user?"
-                                description="The user will no longer be able to access their account until activated again."
-                                confirmLabel="Block user"
-                                destructive
-                                onConfirm={() => handleBlock(user.id)}
-                              />
+                              >
+                                <BanIcon className="mr-2 h-4 w-4" /> Block User
+                              </DropdownMenuItem>
                             ) : (
-                              <ConfirmationDialog
-                                trigger={
-                                  <DropdownMenuItem
-                                    className="text-green-600 focus:text-green-600"
-                                    disabled={isActivating || user.role === "ADMIN"}
-                                  >
-                                    <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
-                                    Activate User
-                                  </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-green-600 focus:text-green-600"
+                                disabled={isActivating || user.role === "ADMIN"}
+                                onClick={() =>
+                                  setStatusAction({
+                                    userId: user.id,
+                                    action: "activate",
+                                  })
                                 }
-                                title="Activate this user?"
-                                description="This will restore the user's access to the platform."
-                                confirmLabel="Activate user"
-                                onConfirm={() => handleActivate(user.id)}
-                              />
+                              >
+                                <CheckCircleIcon className="mr-2 h-4 w-4" />{" "}
+                                Activate User
+                              </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -209,6 +218,38 @@ export default function UsersPage() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog
+        open={!!statusAction}
+        onOpenChange={(open) => !open && setStatusAction(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {statusAction?.action === "block"
+                ? "Block this user?"
+                : "Activate this user?"}
+            </DialogTitle>
+            <DialogDescription>
+              {statusAction?.action === "block"
+                ? "The user will no longer be able to access their account until activated again."
+                : "This will restore the user's access to the platform."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusAction(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant={statusAction?.action === "block" ? "destructive" : "default"}
+              onClick={handleStatusChange}
+              disabled={isBlocking || isActivating}
+            >
+              {statusAction?.action === "block" ? "Block user" : "Activate user"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
